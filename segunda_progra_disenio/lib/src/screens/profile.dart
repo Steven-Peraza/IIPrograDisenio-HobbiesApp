@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../mixins/validation_mixin.dart';
+import 'editProfile.dart';
 
 class Profile extends StatefulWidget {
   createState() {
@@ -54,33 +55,6 @@ class ProfileState extends State<Profile> with ValidationMixin {
       ],
     )
     );
-
-/*
-    return ListView(
-      shrinkWrap: true,
-      padding: const EdgeInsets.all(20.0),
-      children: <Widget>[
-        Column(
-          children: [
-            personalStack(),
-            Container(margin: EdgeInsets.only(top: 25.0)),
-            emailText(),
-            Container(margin: EdgeInsets.only(top: 40.0)),
-            biolabel(),
-            Container(margin: EdgeInsets.only(top: 10.0)),
-            bioText(),
-            Container(margin: EdgeInsets.only(top: 40.0)),
-            hobbitlabel(),
-            Container(margin: EdgeInsets.only(top: 10.0)),
-            hobbitText(),
-            Container(margin: EdgeInsets.only(top: 40.0)),
-            comulabel(),
-            Container(margin: EdgeInsets.only(top: 10.0)),
-            comuGrid(),    
-          ],
-        ),
-      ],
-    );*/
   }
 
   Widget personalStack() {
@@ -214,4 +188,36 @@ class ProfileState extends State<Profile> with ValidationMixin {
         ),
       ]);
   }
+
+  /*
+  Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MaterialApp(
+                  title: 'The Shire',
+                  theme: ThemeData(
+                    primaryColor: Colors.green,
+                    primarySwatch: Colors.green,
+                    scaffoldBackgroundColor: Colors.amber[100],
+                    cursorColor: Colors.green,
+                    accentColor: Colors.green,
+                  ),
+                  home: Scaffold(
+                    resizeToAvoidBottomPadding: false,
+                    appBar: AppBar(
+                      title: Text('The Shire'),
+                      centerTitle: true,
+                      backgroundColor: Colors.green,
+                      actions: <Widget>[
+                        IconButton(
+                          icon: Image.asset('assets/images/bag_end_alternate_1.png'),
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                    body: EditProfile(),
+                  ),
+                )
+              ),
+            );
+  */ 
 }

@@ -17,7 +17,7 @@ class ValidationMixin {
       }
 
   String validateNull(String value){
-    if (!value.length > 0){
+    if (!(value.length > 0)){
       return 'Fill all the fields with data.';
     }
 

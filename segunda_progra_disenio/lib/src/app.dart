@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'screens/login.dart';
 import 'screens/signup.dart';
 import 'screens/profile.dart';
+import 'screens/editProfile.dart';
 
 class App extends StatelessWidget {
   Widget build(context) {
     return MaterialApp(
       title: 'The Shire',
       theme: ThemeData(
+        primaryColor: Colors.green,
         primarySwatch: Colors.green,
         scaffoldBackgroundColor: Colors.amber[100],
         cursorColor: Colors.green,
@@ -26,7 +28,7 @@ class App extends StatelessWidget {
             ),
           ],
         ),
-        body: Profile(),
+        body: Login(),
       ),
     );
   }
