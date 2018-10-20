@@ -1,7 +1,7 @@
 class ValidationMixin {
   
   String validateEmail(String value) {
-        if (!value.contains('@') || !value.contains('.com')){
+        if (!value.contains('@') || !value.contains('.')){
           return 'Please enter a valid email!';
         }
 

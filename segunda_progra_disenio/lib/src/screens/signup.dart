@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' show post,get;
 import '../mixins/validation_mixin.dart';
+import 'dart:convert';
 
 class SignUp extends StatefulWidget {
   createState() {
@@ -17,16 +19,10 @@ class SignUpState extends State<SignUp> with ValidationMixin {
   String email = '';
   String pass = '';
   String newHobbit = '';
+  List<String> hobbitses = [];
   // valores de la lista de hobbies
   Map<String, bool> values = {
-    'acm1pt': false,
-    'chupala': false,
-    'asd': false,
-    'fdgh': false,
-    'qwe': false,
-    'asds': false,
-    'zxc': false,
-    'chubnmpala': false,
+    'Alcoholicos Anominos': false,
   };
 
   Map<String, bool> tipos = {
@@ -34,6 +30,57 @@ class SignUpState extends State<SignUp> with ValidationMixin {
     'Arte': false,
     'Ocio': false,
   };
+
+
+  void addHobbitses() {
+    for (var entry in values.entries) {
+      if (entry.value) {
+        hobbitses.add(entry.key);
+      }
+    }
+  }
+
+  void sendNewUser() async{
+    Uri uri = new Uri.http("172.24.88.125:3000", "/user");
+    Map<String,dynamic> jsonUser = {
+      'name':nombre,
+      'apellidos':apellidos,
+      'nick':nick,
+      'ubicacion':ubicacion,
+      'email':email,
+      'pass':pass,
+      'hobbies':hobbitses,
+      'comunidades':[]
+    };
+    Map<String,String> headers = {
+    'Content-type' : 'application/json',
+    'Accept': 'application/json',
+  };
+    var finalResponse = await post(uri, body: json.encode(jsonUser), headers: headers)
+      .then((response){
+        setState(() {
+          nombre = '';
+          apellidos = '';
+          nick = '';
+          ubicacion = '';
+          email = '';
+          pass = '';
+          newHobbit = '';
+          values = {
+            'Alcoholicos Anominos': false,
+          };
+          tipos = {
+            'Deporte': false,
+            'Arte': false,
+            'Ocio': false,
+          }; 
+        });
+        _showDialog(); 
+      });
+
+
+
+  }
 
   Widget build(context) {
     return NestedScrollView(
@@ -189,7 +236,7 @@ class SignUpState extends State<SignUp> with ValidationMixin {
     return TextFormField(
       decoration: InputDecoration(
         labelText: 'Nickname:',
-        hintText: 'Buglar',
+        hintText: '"Buglar"',
       ),
       validator: validateNull,
       onSaved: (String value) {
@@ -206,7 +253,7 @@ class SignUpState extends State<SignUp> with ValidationMixin {
       ),
       validator: validateNull,
       onSaved: (String value) {
-        email = value;
+        ubicacion = value;
       },
     );
   }
@@ -244,8 +291,10 @@ class SignUpState extends State<SignUp> with ValidationMixin {
       onPressed: () {
         if (formKey.currentState.validate()) {
           formKey.currentState.save();
+          addHobbitses();
           // aqui van todos las variables
-          print('Time to post $nombre and $apellidos to the API');
+          sendNewUser();
+          formKey.currentState.reset();
         }
       },
       child: Text(
@@ -336,4 +385,28 @@ class SignUpState extends State<SignUp> with ValidationMixin {
       color: Colors.green,
     );
   }
+
+  // user defined function
+  void _showDialog() {
+    // flutter defined function
+      showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("SignUp"),
+          content: new Text("Usuario creado correctamente!"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Cerrar"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+    }
 }

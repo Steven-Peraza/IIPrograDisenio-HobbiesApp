@@ -1,14 +1,17 @@
-const express = require('express');
-const app = express();
-const http = require('http').Server(app);
+express = require('express')
+const app = express()
 
-var routes = require("./api/routes");
+userRouter = require('./api/Routes/userRouter')
+mongoose = require('mongoose')
+    // VARIABLES 
+var MongoClient = require('mongodb').MongoClient;
+var mongo_uri = "mongodb://admin:admin@theshiredb-shard-00-00-mtwvf.mongodb.net:27017,theshiredb-shard-00-01-mtwvf.mongodb.net:27017,theshiredb-shard-00-02-mtwvf.mongodb.net:27017/test?ssl=true&replicaSet=TheShireDB-shard-0&authSource=admin&retryWrites=true";
 
-const port = 3000;
+const db = mongoose.connect(mongo_uri, { useNewUrlParser: true });
 
+const port = process.env.PORT || 3000;
 
-app.use(express.json())
-app.use(cors())
-routes(app)
+app.use(express.json());
+app.use('/user', userRouter);
 
-http.listen(port, () => console.info(`REST API running on port ${port}`));
+app.listen(port, () => console.info(`REST API running on port ${port}`));
