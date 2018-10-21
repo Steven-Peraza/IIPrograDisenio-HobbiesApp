@@ -1,14 +1,56 @@
 import 'package:flutter/material.dart';
-import '../mixins/validation_mixin.dart';
 import 'editProfile.dart';
+import 'package:http/http.dart' show get, post;
+import 'dart:convert';
 
-class Profile extends StatefulWidget {
-  createState() {
-    return ProfileState();
-  }
+class Profile extends StatefulWidget{
+  final String idActual;
+  Profile({Key key, this.idActual}) : super(key: key);
+  @override
+  ProfileState createState() => new ProfileState();
 }
 
-class ProfileState extends State<Profile> with ValidationMixin {
+class ProfileState extends State<Profile> {
+
+  String nombre = '';
+  String apellidos = '';
+  String nick = '';
+  String ubicacion = '';
+  String email = '';
+  String pass = '';
+  List<dynamic> hobbitses = [];
+  List<dynamic> comus = [];
+
+  void getProfile() async {
+    Uri uri = new Uri.http("192.168.1.112:3000", "/profiles/getProfile");
+    Map<String,dynamic> jsonUser = {
+      'id':widget.idActual
+    };
+    Map<String,String> headers = {
+    'Content-type' : 'application/json',
+    'Accept': 'application/json',
+    };
+    var finalResponse = await post(uri, body: json.encode(jsonUser), headers: headers)
+      .then((response){
+        if (response.statusCode == 201) {
+            var extractdata = json.decode(response.body);
+              setState(() {
+                nombre = extractdata['name'];
+                apellidos = extractdata['lastName'];
+                nick = extractdata['nick'];
+                ubicacion = extractdata['ubicacion'];
+                email = extractdata['email'];
+                pass = extractdata['pass'];
+                hobbitses = extractdata['hobbies'];
+                comus = extractdata['comunidades'];
+            });
+                
+        } else {
+          // If that response was not OK, throw an error.
+           throw Exception('Jaja C mamo!'); 
+        }
+      });
+  }
 
   Widget build(context) {
     return NestedScrollView(
@@ -58,6 +100,7 @@ class ProfileState extends State<Profile> with ValidationMixin {
   }
 
   Widget personalStack() {
+    getProfile();
     return Stack(
       alignment: const Alignment(0.0, 1.0),
       children: [
@@ -75,7 +118,7 @@ class ProfileState extends State<Profile> with ValidationMixin {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                'Steven Peraza',
+                '$nombre',
                 style: TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
@@ -83,7 +126,7 @@ class ProfileState extends State<Profile> with ValidationMixin {
                 ),
               ),
               Text(
-                '"Ezz"',
+                '$nick',
                 style: TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
@@ -91,7 +134,7 @@ class ProfileState extends State<Profile> with ValidationMixin {
                 ),
               ),
               Text(
-                'Aguas Zarcas',
+                '$ubicacion',
                 style: TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
@@ -108,7 +151,7 @@ class ProfileState extends State<Profile> with ValidationMixin {
 
   Widget emailText() {
     return  Text(
-      'sjpp8448@gmail.com',
+      '$email',
       style: TextStyle(
         fontSize: 15.0,
         // fuente personalizada aqui

@@ -2,7 +2,7 @@ express = require('express')
 controller = require('../Controllers/userController')
 const userRouter = express.Router();
 userRouter
-    .get('/', controller.getAllUsers)
-    .post('/', controller.addNewUser)
+    .post('/login/', controller.getAllUsers)
+    .post('/signup/', controller.addNewUser)
 
 module.exports = userRouter
