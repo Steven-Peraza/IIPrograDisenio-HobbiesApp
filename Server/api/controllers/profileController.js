@@ -1,12 +1,12 @@
 const Users = require('../models/user');
 const mongoose = require('mongoose');
 
-exports.getAllUsers = (req, res) => {
-    Users.findOne({ email: req.body['email'], pass: req.body['pass'] })
+exports.getData = (req, res) => {
+    Users.findOne({ _id: req.body['id'] })
         .then((doc) => {
             if (doc) {
-                console.log(doc._id);
-                res.status(201).send({ _id: doc._id });
+                console.log(doc);
+                res.status(201).send(doc);
             } else {
                 console.log("no data exist for this id");
                 res.status(500).send({ _id: -1 });
@@ -17,7 +17,7 @@ exports.getAllUsers = (req, res) => {
         });
 }
 
-exports.addNewUser = (req, res) => {
+exports.editData = (req, res) => {
     const newUser = new Users({
         _id: new mongoose.Types.ObjectId(),
         name: req.body['name'],

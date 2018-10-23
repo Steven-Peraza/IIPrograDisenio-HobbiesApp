@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' show post,get;
+import 'package:http/http.dart' show post, get;
 import '../mixins/validation_mixin.dart';
 import 'dart:convert';
 
@@ -41,7 +41,7 @@ class SignUpState extends State<SignUp> with ValidationMixin {
   }
 
   void sendNewUser() async{
-    Uri uri = new Uri.http("172.24.88.125:3000", "/user");
+    Uri uri = new Uri.http("192.168.1.112:3000", "/user/signup");
     Map<String,dynamic> jsonUser = {
       'name':nombre,
       'apellidos':apellidos,
@@ -55,7 +55,7 @@ class SignUpState extends State<SignUp> with ValidationMixin {
     Map<String,String> headers = {
     'Content-type' : 'application/json',
     'Accept': 'application/json',
-  };
+    };
     var finalResponse = await post(uri, body: json.encode(jsonUser), headers: headers)
       .then((response){
         setState(() {

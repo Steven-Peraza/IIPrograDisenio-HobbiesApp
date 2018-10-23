@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' show get;
+import 'package:http/http.dart' show get, post;
 import '../mixins/validation_mixin.dart';
 import 'dart:convert';
 
@@ -15,17 +15,60 @@ class Login extends StatefulWidget {
 class LoginState extends State<Login> with ValidationMixin {
   
   void login(String email,String pass) async {
-    var response = await get('url/login');
-
-    if(!(json.decode(response.body)['respuesta'] == 'You shall not pass!')){
-      setState(() {
-          logueo = true;
+    Uri uri = new Uri.http("192.168.1.112:3000", "/user/login");
+    Map<String,dynamic> jsonUser = {
+      'email':email,
+      'pass':pass
+    };
+    Map<String,String> headers = {
+    'Content-type' : 'application/json',
+    'Accept': 'application/json',
+    };
+    var finalResponse = await post(uri, body: json.encode(jsonUser), headers: headers)
+      .then((response){
+        setState(() {
+          email = '';
+          pass = '';
         });
-    }
-    
+        if (response.statusCode == 201) {
+            var extractdata = json.decode(response.body);
+            print(extractdata['_id']);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MaterialApp(
+                  title: 'The Shire',
+                  theme: ThemeData(
+                    primaryColor: Colors.green,
+                    primarySwatch: Colors.green,
+                    scaffoldBackgroundColor: Colors.amber[100],
+                    cursorColor: Colors.green,
+                    accentColor: Colors.green,
+                  ),
+                  home: Scaffold(
+                    resizeToAvoidBottomPadding: false,
+                    appBar: AppBar(
+                      title: Text('The Shire'),
+                      centerTitle: true,
+                      backgroundColor: Colors.green,
+                      actions: <Widget>[
+                        IconButton(
+                          icon: Image.asset('assets/images/bag_end_alternate_1.png'),
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                    body: Profile(idActual: extractdata['_id']),
+                  ),
+                )
+              ),
+            );
+        } else {
+          // If that response was not OK, throw an error.
+           _showDialog(); 
+        }
+      });
   }
 
-  bool logueo = false;
   final formKey = GlobalKey<FormState>();
 
   String email = '';
@@ -105,42 +148,8 @@ class LoginState extends State<Login> with ValidationMixin {
       onPressed: () {
         if (formKey.currentState.validate()) {
           formKey.currentState.save();
-          print('Time to post $email and $pass to the API');
           login(email, pass);
-          if (logueo){
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => MaterialApp(
-                  title: 'The Shire',
-                  theme: ThemeData(
-                    primaryColor: Colors.green,
-                    primarySwatch: Colors.green,
-                    scaffoldBackgroundColor: Colors.amber[100],
-                    cursorColor: Colors.green,
-                    accentColor: Colors.green,
-                  ),
-                  home: Scaffold(
-                    resizeToAvoidBottomPadding: false,
-                    appBar: AppBar(
-                      title: Text('The Shire'),
-                      centerTitle: true,
-                      backgroundColor: Colors.green,
-                      actions: <Widget>[
-                        IconButton(
-                          icon: Image.asset('assets/images/bag_end_alternate_1.png'),
-                          onPressed: () {},
-                        ),
-                      ],
-                    ),
-                    body: Profile(),
-                  ),
-                )
-              ),
-            );
-          }
-          else {
-            //Texto de c mamo!
-          }
+          formKey.currentState.reset();
         }
       },
       child: Text(
@@ -217,4 +226,27 @@ class LoginState extends State<Login> with ValidationMixin {
       color: Colors.green,
     );
   }
+
+  void _showDialog() {
+    // flutter defined function
+      showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Contraseña o correo incorrectos"),
+          content: new Text("Intente de nuevo!"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Cerrar"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+    }
 }
