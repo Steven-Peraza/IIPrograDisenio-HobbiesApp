@@ -7,8 +7,8 @@ const path = require('path');
 console.log("Iniciando servicio")
 //configuring the AWS environment
 AWS.config.update({
-    accessKeyId: "AKIAII7BKVUA2BO6V73Q",
-    secretAccessKey: "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"
+    accessKeyId: process.env.KEY_ID,
+    secretAccessKey: process.env.SECRET_ACCESS_KEY
   });
 
 var s3 = new AWS.S3();
