@@ -1,3 +1,4 @@
+require('dotenv').config()
 express = require('express')
 const app = express()
 
@@ -17,5 +18,10 @@ app.use(express.json());
 app.use('/user', userRouter);
 app.use('/profiles', profileRouter);
 app.use('/hobbit', hobbitRouter);
+app.get('/', (req, res) => {
+    res.send("Server de Hobby Site")
+    console.log("conexion entrante")
+    console.log("hola" + process.env.APELLIDO)
+})
 
 app.listen(port, () => console.info(`REST API running on port ${port}`));
