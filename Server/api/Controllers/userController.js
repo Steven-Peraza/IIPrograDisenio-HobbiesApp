@@ -6,7 +6,7 @@ exports.getAllUsers = (req, res) => {
         .then((doc) => {
             if (doc) {
                 console.log(doc._id);
-                res.status(201).send({ _id: doc._id });
+                res.status(201).send(doc);
             } else {
                 console.log("no data exist for this id");
                 res.status(500).send({ _id: -1 });
@@ -27,7 +27,9 @@ exports.addNewUser = (req, res) => {
         email: req.body['email'],
         pass: req.body['pass'],
         hobbies: req.body['hobbies'],
-        comunidades: req.body['comunidades']
+        comunidades: req.body['comunidades'],
+        bio: req.body['bio'],
+        foto: req.body['foto']
     });
     newUser.save().then((result) => {
         console.log(result);
