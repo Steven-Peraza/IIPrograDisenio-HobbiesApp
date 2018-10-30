@@ -4,6 +4,7 @@ const app = express()
 
 userRouter = require('./api/Routes/userRouter')
 profileRouter = require('./api/routes/profileRouter')
+publicationsRouter = require('./api/Routes/publicationRouter')
 mongoose = require('mongoose')
     // VARIABLES 
 var MongoClient = require('mongodb').MongoClient;
@@ -16,6 +17,8 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use('/user', userRouter);
 app.use('/profiles', profileRouter);
+app.use('/publications', publicationsRouter);
+
 app.get('/',(req,res)=>{
     res.send("Server de Hobby Site")
     console.log("conexion entrante")
