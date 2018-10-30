@@ -1,70 +1,99 @@
 import 'package:flutter/material.dart';
 import 'editProfile.dart';
-import 'package:http/http.dart' show get, post;
-import 'dart:convert';
 
-class Profile extends StatefulWidget{
+
+class Profile extends StatelessWidget {
+
   final String idActual;
-  Profile({Key key, this.idActual}) : super(key: key);
-  @override
-  ProfileState createState() => new ProfileState();
-}
+  final String nombre;
+  final String apellidos;
+  final String nick;
+  final String ubicacion;
+  final String email;
+  final String pass;
+  final String bio;
+  final List<dynamic> hobbitses;
+  final List<dynamic> comus;
 
-class ProfileState extends State<Profile> {
+  BuildContext contexto;
 
-  String nombre = '';
-  String apellidos = '';
-  String nick = '';
-  String ubicacion = '';
-  String email = '';
-  String pass = '';
-  List<dynamic> hobbitses = [];
-  List<dynamic> comus = [];
+  Profile({Key key, this.idActual,  this.nombre, this.apellidos, this.comus, this.email, this.pass, this.bio, this.hobbitses,
+              this.nick, this.ubicacion}) : super(key: key);
 
-  void getProfile() async {
-    Uri uri = new Uri.http("192.168.1.112:3000", "/profiles/getProfile");
-    Map<String,dynamic> jsonUser = {
-      'id':widget.idActual
-    };
-    Map<String,String> headers = {
-    'Content-type' : 'application/json',
-    'Accept': 'application/json',
-    };
-    var finalResponse = await post(uri, body: json.encode(jsonUser), headers: headers)
-      .then((response){
-        if (response.statusCode == 201) {
-            var extractdata = json.decode(response.body);
-              setState(() {
-                nombre = extractdata['name'];
-                apellidos = extractdata['lastName'];
-                nick = extractdata['nick'];
-                ubicacion = extractdata['ubicacion'];
-                email = extractdata['email'];
-                pass = extractdata['pass'];
-                hobbitses = extractdata['hobbies'];
-                comus = extractdata['comunidades'];
-            });
-                
-        } else {
-          // If that response was not OK, throw an error.
-           throw Exception('Jaja C mamo!'); 
-        }
-      });
-  }
-
-  Widget build(context) {
+  Widget build(BuildContext context) {
+    contexto = context;
     return NestedScrollView(
       headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
             new SliverAppBar(
               pinned: true,
               centerTitle: true,
-              title: new Text(
-                'Perfil de Usuario:',
-                style: TextStyle(
-                  fontSize: 20.0,
-                  color: Colors.black,
-                  // fuente personalizada aqui
+              flexibleSpace: new DefaultTabController(
+                length: 2,
+                child: Scaffold(
+                  appBar: AppBar(
+                    backgroundColor: Colors.amber[100],
+                    bottom: TabBar(
+                      indicatorColor: Colors.green,
+                      tabs: [
+                        Tab(child: new FlatButton(
+                          child: new Text("Profile",style: TextStyle(fontSize: 15.0,
+                              color: Colors.black,
+                              fontFamily: 'Viking',
+                              ),
+                            ),
+                            onPressed: () {
+                            },
+                          ),
+                        ),
+                        Tab(child: new FlatButton(
+                          child: new Text("Muro",style: TextStyle(fontSize: 15.0,
+                              color: Colors.black,
+                              fontFamily: 'Viking',
+                              ),),
+                            onPressed: () {
+                              Navigator.push(
+                                contexto,
+                                MaterialPageRoute(builder: (context) => MaterialApp(
+                                    title: 'The Shire',
+                                    theme: ThemeData(
+                                      primaryColor: Colors.green,
+                                      primarySwatch: Colors.green,
+                                      scaffoldBackgroundColor: Colors.amber[100],
+                                      cursorColor: Colors.green,
+                                      accentColor: Colors.green,
+                                    ),
+                                    home: Scaffold(
+                                      resizeToAvoidBottomPadding: false,
+                                      appBar: AppBar(
+                                        title: Text('The Shire',style: TextStyle(fontSize: 20.0,
+                                          color: Colors.black,
+                                          fontFamily: 'Viking',
+                                          ),
+                                        ),
+                                        centerTitle: true,
+                                        backgroundColor: Colors.green,
+                                        actions: <Widget>[
+                                          IconButton(
+                                            icon: Image.asset('assets/images/bag_end_alternate_1.png'),
+                                            onPressed: () {},
+                                          ),
+                                        ],
+                                      ),
+                                      /*body: EditProfile(idActual: idActual, nombre: nombre, apellidos: apellidos, email: email,
+                                                        pass: pass, bio: bio, nick: nick, ubicacion: ubicacion, hobbitses: hobbitses,
+                                                        comus: comus
+                                                        ),*/
+                                    )
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
               backgroundColor: Colors.amber[100],
@@ -91,7 +120,9 @@ class ProfileState extends State<Profile> {
             Container(margin: EdgeInsets.only(top: 40.0)),
             comulabel(),
             Container(margin: EdgeInsets.only(top: 10.0)),
-            comuGrid(),    
+            comuGrid(),
+            Container(margin: EdgeInsets.only(top: 40.0)),
+            editButton(),    
           ],
         ),
       ],
@@ -99,8 +130,61 @@ class ProfileState extends State<Profile> {
     );
   }
 
+  Widget editButton() {
+    return RaisedButton(
+      onPressed: () {
+        Navigator.push(
+              contexto,
+              MaterialPageRoute(builder: (context) => MaterialApp(
+                  title: 'The Shire',
+                  theme: ThemeData(
+                    primaryColor: Colors.green,
+                    primarySwatch: Colors.green,
+                    scaffoldBackgroundColor: Colors.amber[100],
+                    cursorColor: Colors.green,
+                    accentColor: Colors.green,
+                  ),
+                  home: Scaffold(
+                    resizeToAvoidBottomPadding: false,
+                    appBar: AppBar(
+                      title: Text('The Shire',style: TextStyle(fontSize: 20.0,
+                              color: Colors.black,
+                              fontFamily: 'Viking',
+                              ),
+                      ),
+                      centerTitle: true,
+                      backgroundColor: Colors.green,
+                      actions: <Widget>[
+                        IconButton(
+                          icon: Image.asset('assets/images/bag_end_alternate_1.png'),
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                    body: EditProfile(idActual: idActual, nombre: nombre, apellidos: apellidos, email: email,
+                                      pass: pass, bio: bio, nick: nick, ubicacion: ubicacion, hobbitses: hobbitses,
+                                      comus: comus
+                                      ),
+                )
+              ),
+            ),
+        );
+      },
+      child: Text(
+        'Editar Perfil',
+        style: TextStyle(
+          fontFamily: 'Viking',
+          color: Colors.white,
+        // fuente personalizada aqui
+        ),
+      ),
+      color: Colors.green,
+    );
+  }
+
   Widget personalStack() {
-    getProfile();
+    // OJO con el get
+    // getProfile();
     return Stack(
       alignment: const Alignment(0.0, 1.0),
       children: [
@@ -120,7 +204,8 @@ class ProfileState extends State<Profile> {
                   Text(
                 '$nombre',
                 style: TextStyle(
-                  fontSize: 20.0,
+                  fontFamily: 'Morris',
+                  fontSize: 25.0,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -128,7 +213,8 @@ class ProfileState extends State<Profile> {
               Text(
                 '$nick',
                 style: TextStyle(
-                  fontSize: 20.0,
+                  fontFamily: 'Morris',
+                  fontSize: 25.0,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -136,7 +222,8 @@ class ProfileState extends State<Profile> {
               Text(
                 '$ubicacion',
                 style: TextStyle(
-                  fontSize: 20.0,
+                  fontFamily: 'Morris',
+                  fontSize: 25.0,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -153,7 +240,8 @@ class ProfileState extends State<Profile> {
     return  Text(
       '$email',
       style: TextStyle(
-        fontSize: 15.0,
+        fontFamily: 'Morris',
+        fontSize: 20.0,
         // fuente personalizada aqui
         ),
       );
@@ -163,7 +251,8 @@ class ProfileState extends State<Profile> {
     return  Text(
       'Bio:',
       style: TextStyle(
-        fontSize: 20.0,
+        fontFamily: 'Viking',
+        fontSize: 15.0,
         // fuente personalizada aqui
         ),
       );
@@ -171,9 +260,10 @@ class ProfileState extends State<Profile> {
 
   Widget bioText() {
     return  Text(
-      'Puto el que lo lea... XD',
+      '$bio',
       style: TextStyle(
-        fontSize: 15.0,
+        fontFamily: 'Morris',
+        fontSize: 20.0,
         // fuente personalizada aqui
         ),
       );
@@ -183,17 +273,28 @@ class ProfileState extends State<Profile> {
     return  Text(
       'Hobbies Preferidos:',
       style: TextStyle(
-        fontSize: 20.0,
+        fontFamily: 'Viking',
+        fontSize: 15.0,
         // fuente personalizada aqui
         ),
       );
   }
 
   Widget hobbitText() {
+    String textoFinal = '';
+    for (var i = 0; i < hobbitses.length; i++) {
+      if (i == 0) {
+        textoFinal += hobbitses[i];
+      }
+      else {
+        textoFinal += ', '+ hobbitses[i];
+      }
+    }
     return  Text(
-      'Dormir, comer, cagar y juegar',
+      '$textoFinal',
       style: TextStyle(
-        fontSize: 15.0,
+        fontFamily: 'Morris',
+        fontSize: 20.0,
         // fuente personalizada aqui
         ),
       );
@@ -203,7 +304,8 @@ class ProfileState extends State<Profile> {
       return  Text(
         'Comunidades Miembro:',
         style: TextStyle(
-          fontSize: 20.0,
+          fontFamily: 'Viking',
+          fontSize: 15.0,
           // fuente personalizada aqui
           ),
         );
@@ -231,36 +333,4 @@ class ProfileState extends State<Profile> {
         ),
       ]);
   }
-
-  /*
-  Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => MaterialApp(
-                  title: 'The Shire',
-                  theme: ThemeData(
-                    primaryColor: Colors.green,
-                    primarySwatch: Colors.green,
-                    scaffoldBackgroundColor: Colors.amber[100],
-                    cursorColor: Colors.green,
-                    accentColor: Colors.green,
-                  ),
-                  home: Scaffold(
-                    resizeToAvoidBottomPadding: false,
-                    appBar: AppBar(
-                      title: Text('The Shire'),
-                      centerTitle: true,
-                      backgroundColor: Colors.green,
-                      actions: <Widget>[
-                        IconButton(
-                          icon: Image.asset('assets/images/bag_end_alternate_1.png'),
-                          onPressed: () {},
-                        ),
-                      ],
-                    ),
-                    body: EditProfile(),
-                  ),
-                )
-              ),
-            );
-  */ 
 }

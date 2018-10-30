@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/login.dart';
-import 'screens/signup.dart';
-import 'screens/profile.dart';
-import 'screens/editProfile.dart';
+
 
 class App extends StatelessWidget {
   Widget build(context) {
@@ -12,13 +10,14 @@ class App extends StatelessWidget {
         primaryColor: Colors.green,
         primarySwatch: Colors.green,
         scaffoldBackgroundColor: Colors.amber[100],
+        dialogBackgroundColor: Colors.amber[100],
         cursorColor: Colors.green,
         accentColor: Colors.green,
       ),
       home: Scaffold(
         resizeToAvoidBottomPadding: false,
         appBar: AppBar(
-          title: Text('The Shire'),
+          title: Text('The Shire',style: TextStyle(fontFamily: 'Viking'),),
           centerTitle: true,
           backgroundColor: Colors.green,
           actions: <Widget>[

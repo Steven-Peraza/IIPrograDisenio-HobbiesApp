@@ -22,15 +22,14 @@ class SignUpState extends State<SignUp> with ValidationMixin {
   List<String> hobbitses = [];
   // valores de la lista de hobbies
   Map<String, bool> values = {
-    'Alcoholicos Anominos': false,
+
   };
 
-  Map<String, bool> tipos = {
-    'Deporte': false,
-    'Arte': false,
-    'Ocio': false,
+  Map<String, bool> newValues ={
+
   };
 
+  String searchHobbie = '';
 
   void addHobbitses() {
     for (var entry in values.entries) {
@@ -40,17 +39,19 @@ class SignUpState extends State<SignUp> with ValidationMixin {
     }
   }
 
-  void sendNewUser() async{
-    Uri uri = new Uri.http("192.168.1.112:3000", "/user/signup");
+  void sendNewUser() async {
+    Uri uri = new Uri.http("192.168.1.125:3000", "/user/signup");
     Map<String,dynamic> jsonUser = {
       'name':nombre,
-      'apellidos':apellidos,
+      'lastName':apellidos,
       'nick':nick,
       'ubicacion':ubicacion,
       'email':email,
       'pass':pass,
       'hobbies':hobbitses,
-      'comunidades':[]
+      'comunidades':[],
+      'bio': 'Soy parte de la comunidad del anillo!',
+      'foto': ''
     };
     Map<String,String> headers = {
     'Content-type' : 'application/json',
@@ -58,7 +59,8 @@ class SignUpState extends State<SignUp> with ValidationMixin {
     };
     var finalResponse = await post(uri, body: json.encode(jsonUser), headers: headers)
       .then((response){
-        setState(() {
+        if (this.mounted){
+          setState(() {
           nombre = '';
           apellidos = '';
           nick = '';
@@ -67,19 +69,50 @@ class SignUpState extends State<SignUp> with ValidationMixin {
           pass = '';
           newHobbit = '';
           values = {
-            'Alcoholicos Anominos': false,
           };
-          tipos = {
-            'Deporte': false,
-            'Arte': false,
-            'Ocio': false,
-          }; 
-        });
+          });
+        }
+
         _showDialog(); 
       });
+  }
 
+  void getHobbitses() async {
+    Uri uri = new Uri.http("192.168.1.125:3000", "/hobbit/getHobbit");
+    var response = await get(uri);
+    if (response.statusCode == 201) {
+    // If server returns an OK response, parse the JSON
+      var list = json.decode(response.body);
+      for (var entry in list) {
+        if (!(values.containsKey(entry))) {
+          values['$entry'] = false;
+        }
 
+    }
+    } else {
+      // If that response was not OK, throw an error.
+      throw Exception('Failed to load post');
+    }
+  }
 
+  void postHobb(String newHobbit) async {
+    Uri uri = new Uri.http("192.168.1.125:3000", "/hobbit/newHobbit");
+    Map<String,dynamic> jsonUser = {
+      'name':newHobbit,
+    };
+    Map<String,String> headers = {
+    'Content-type' : 'application/json',
+    'Accept': 'application/json',
+    };
+    var finalResponse = await post(uri, body: json.encode(jsonUser), headers: headers)
+      .then((response){
+        if (this.mounted){
+          setState(() {
+            newHobbit = '';
+          });
+        }
+        //_showDialog(); 
+      });
   }
 
   Widget build(context) {
@@ -92,8 +125,9 @@ class SignUpState extends State<SignUp> with ValidationMixin {
               title: new Text(
                 'Crea una nueva cuenta:',
                 style: TextStyle(
-                  fontSize: 20.0,
+                  fontSize: 15.0,
                   color: Colors.black,
+                  fontFamily: 'Viking',
                   // fuente personalizada aqui
                 ),
               ),
@@ -117,21 +151,17 @@ class SignUpState extends State<SignUp> with ValidationMixin {
             emailField(),
             Container(margin: EdgeInsets.only(top: 25.0)),
             passField(),
-            Container(margin: EdgeInsets.only(top: 25.0)),
-            textoMedio(),
             Container(margin: EdgeInsets.only(top: 40.0)),
-            hobbitList(),
+            textoMedio(),
             Container(margin: EdgeInsets.only(top: 25.0)),
+            viewHobbitButton(),
+            Container(margin: EdgeInsets.only(top: 40.0)),
             textoMedio2(),
-            Container(margin: EdgeInsets.only(top: 25.0)),
-            newHobbitField(),
-            Container(margin: EdgeInsets.only(top: 25.0)),
-            textoMedio3(),
-            Container(margin: EdgeInsets.only(top: 25.0)),
-            typeHobbitList(),
             Container(margin: EdgeInsets.only(top: 25.0)),
             createNewHobbitButton(),
             Container(margin: EdgeInsets.only(top: 40.0)),
+            textoMedio3(),
+            Container(margin: EdgeInsets.only(top: 25.0)),
             createButton(),
           ],
         ),
@@ -142,38 +172,179 @@ class SignUpState extends State<SignUp> with ValidationMixin {
     
   }
 
-  Widget hobbitList() {
-    return ListView(
-      shrinkWrap: true,
-        children: values.keys.map((String key) {
-          return new CheckboxListTile(
-            title: new Text(key),
-            value: values[key],
-            onChanged: (bool value) {
-              setState(() {
-                values[key] = value;
-              });
-            },
-          );
-        }).toList()
-      );
+  void hobbitList() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Hobbitses Preferidos",style: TextStyle(fontFamily:'Viking'),),
+          content: new SingleChildScrollView(
+            child: new Column(
+              children: <Widget>[
+                new Text(
+                  "Busqueda de Hobbies",
+                  style: TextStyle(
+                    fontFamily: 'Viking',
+                  ),
+                ),
+                new TextField(
+                  style: TextStyle(
+                    fontFamily: 'Morris',
+                    color: Colors.black,
+                    fontSize: 20.0,
+                  ),
+                  decoration: InputDecoration(
+                    labelText: 'Hobbie a Buscar:',
+                    hintText: 'Cazar Huargos',
+                  ),
+                  //validator: validateNull,
+                  onSubmitted: (String value) {
+                    searchHobbie = value;
+                    searchHobbiton(searchHobbie);
+                  },
+                  onChanged: (String value){
+                    newValues = {};
+                  },
+                ),
+                new ListView(
+                shrinkWrap: true,
+                  children: newValues.keys.map((String key) {
+                    return new CheckboxListTile(
+                      title: new Text(key,style: TextStyle(fontFamily:'Morris',fontSize: 20.0),),
+                      value: newValues[key],
+                      onChanged: (bool value) {
+                        setState(() {
+                          newValues[key] = value;
+                          values[key] = value;
+                        });
+                      },
+                    );
+                  }).toList()
+                ),
+              ],
+            ),
+          ),
+              
+          
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Cerrar",style: TextStyle(
+                    fontFamily: 'Viking',
+                  )),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+    setState(() {
+      newValues = {};
+    });
+    
   }
 
-  Widget typeHobbitList() {
-    return ListView(
-      shrinkWrap: true,
-        children: tipos.keys.map((String key) {
-          return new CheckboxListTile(
-            title: new Text(key),
-            value: tipos[key],
-            onChanged: (bool value) {
-              setState(() {
-                tipos[key] = value;
-              });
-            },
-          );
-        }).toList()
-      );
+  void searchHobbiton(String text){
+    for (var entry in values.entries) {
+      if (entry.key.startsWith(text)) {
+        var joder = entry.key;
+        newValues[joder] = entry.value;
+      }
+    }
+  }
+
+  void creatingHobbit(){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Crea tu Hobbit",style: TextStyle(
+                    fontFamily: 'Viking',
+                  ),),
+          content: new SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                new TextField(
+                  style: TextStyle(
+                    fontFamily: 'Morris',
+                    color: Colors.black,
+                    fontSize: 20.0,
+                  ),
+                  decoration: InputDecoration(
+                    labelText: 'Hobbie a Crear:',
+                    hintText: 'Cazar Huargos',
+                  ),
+                  onSubmitted: (String value) {
+                    newHobbit = value;
+                  },
+                ),
+                new Container(margin: EdgeInsets.only(top: 25.0)),
+                new FlatButton(
+                  onPressed: () {
+                    if ( newHobbit.length >= 4 ) {
+                      postHobb(newHobbit);
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return new AlertDialog(
+                            title: new Text("Nuevo Hobby",style: TextStyle(
+                              fontFamily: 'Viking',
+                            ),),
+                            content: new Text("Hobby creado correctamente",style: TextStyle(
+                              fontFamily: 'Morris',
+                            ),),
+                          );
+                        }
+                      );
+                    }
+                    else{
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return new AlertDialog(
+                            title: new Text("Nuevo Hobby",style: TextStyle(
+                              fontFamily: 'Viking',
+                            ),),
+                            content: new Text("Error! Longitud Minima del hobby es 4 caracteres.",style: TextStyle(
+                              fontFamily: 'Morris',
+                            )),
+                          );
+                        }
+                      );
+                    }
+                    
+                  },
+                  child: Text(
+                    'Agregar Hobbit',
+                    style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Viking',
+                    // fuente personalizada aqui
+                    ),
+                  ),
+                  color: Colors.green,
+                ),
+              ],
+            ),
+            
+          ),    
+          
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Cerrar"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget rowN1() {
@@ -208,6 +379,11 @@ class SignUpState extends State<SignUp> with ValidationMixin {
 
   Widget nameField() {
     return TextFormField(
+      style: TextStyle(
+                    fontFamily: 'Morris',
+                    color: Colors.black,
+                    fontSize: 20.0,
+                  ),
       decoration: InputDecoration(
         labelText: 'Name:',
         hintText: 'Bilbo',
@@ -221,6 +397,11 @@ class SignUpState extends State<SignUp> with ValidationMixin {
 
   Widget appField() {
     return TextFormField(
+      style: TextStyle(
+                    fontFamily: 'Morris',
+                    color: Colors.black,
+                    fontSize: 20.0,
+                  ),
       decoration: InputDecoration(
         labelText: 'Last Names:',
         hintText: 'Baggins',
@@ -234,6 +415,11 @@ class SignUpState extends State<SignUp> with ValidationMixin {
 
   Widget nickField() {
     return TextFormField(
+      style: TextStyle(
+                    fontFamily: 'Morris',
+                    color: Colors.black,
+                    fontSize: 20.0,
+                  ),
       decoration: InputDecoration(
         labelText: 'Nickname:',
         hintText: '"Buglar"',
@@ -247,6 +433,11 @@ class SignUpState extends State<SignUp> with ValidationMixin {
 
   Widget ubiField() {
     return TextFormField(
+      style: TextStyle(
+                    fontFamily: 'Morris',
+                    color: Colors.black,
+                    fontSize: 20.0,
+                  ),
       decoration: InputDecoration(
         labelText: 'Ubicacion:',
         hintText: 'The Shire',
@@ -260,6 +451,11 @@ class SignUpState extends State<SignUp> with ValidationMixin {
 
   Widget emailField() {
     return TextFormField(
+      style: TextStyle(
+                    fontFamily: 'Morris',
+                    color: Colors.black,
+                    fontSize: 20.0,
+                  ),
       keyboardType:TextInputType.emailAddress,
       decoration: InputDecoration(
         labelText: 'Email:',
@@ -274,6 +470,11 @@ class SignUpState extends State<SignUp> with ValidationMixin {
 
   Widget passField() {
     return TextFormField(
+      style: TextStyle(
+                    fontFamily: 'Morris',
+                    color: Colors.black,
+                    fontSize: 20.0,
+                  ),
       obscureText: true,
       decoration: InputDecoration(
         labelText: 'Password:',
@@ -295,12 +496,17 @@ class SignUpState extends State<SignUp> with ValidationMixin {
           // aqui van todos las variables
           sendNewUser();
           formKey.currentState.reset();
+          setState(() {
+            values = {
+            };            
+          });
         }
       },
       child: Text(
         'Create Profile',
         style: TextStyle(
         color: Colors.white,
+        fontFamily: 'Viking',
         // fuente personalizada aqui
         ),
       ),
@@ -312,7 +518,8 @@ class SignUpState extends State<SignUp> with ValidationMixin {
     return  Text(
       'Datos Personales:',
       style: TextStyle(
-        fontSize: 20.0,
+        fontSize: 15.0,
+        fontFamily: 'Viking',
         // fuente personalizada aqui
         ),
       );
@@ -320,9 +527,10 @@ class SignUpState extends State<SignUp> with ValidationMixin {
 
   Widget textoMedio() {
     return  Text(
-      'Hobbitses Preferidos:',
+      'Hobbies:',
       style: TextStyle(
-        fontSize: 20.0,
+        fontSize: 15.0,
+        fontFamily: 'Viking',
         // fuente personalizada aqui
         ),
       );
@@ -333,7 +541,8 @@ class SignUpState extends State<SignUp> with ValidationMixin {
     return  Text(
       'No encuentras tu Hobby? Crealo!',
       style: TextStyle(
-        fontSize: 20.0,
+        fontSize: 15.0,
+        fontFamily: 'Viking',
         // fuente personalizada aqui
         ),
       );
@@ -341,43 +550,42 @@ class SignUpState extends State<SignUp> with ValidationMixin {
 
   Widget textoMedio3() {
     return  Text(
-      'Tipo de Hobbit:',
+      'Registro de Cuenta',
       style: TextStyle(
-        fontSize: 20.0,
+        fontSize: 15.0,
+        fontFamily: 'Viking',
         // fuente personalizada aqui
         ),
       );
   }
 
-  Widget newHobbitField() {
-    return TextFormField(
-      decoration: InputDecoration(
-        labelText: 'Nombre del Hobby:',
-        hintText: 'Walking into Mordor',
-      ),
-      validator: validateNull,
-      onSaved: (String value) {
-        newHobbit = value;
+  Widget viewHobbitButton() {
+    return RaisedButton(
+      onPressed: () {
+        getHobbitses();
+        hobbitList();
       },
+      child: Text(
+        'Agregar Hobbitses',
+        style: TextStyle(
+        fontFamily: 'Viking',
+        color: Colors.white,
+        // fuente personalizada aqui
+        ),
+      ),
+      color: Colors.green,
     );
-  }
-
-  Widget newHobbitList() {
-    return null;
   }
 
   Widget createNewHobbitButton() {
     return RaisedButton(
       onPressed: () {
-        /*if (formKey.currentState.validate()) {
-          formKey.currentState.save();
-          // aqui van todos las variables
-          print('Time to post $nombre and $apellidos to the API');
-        }*/
+        creatingHobbit();
       },
       child: Text(
         'Create New Hobbit',
         style: TextStyle(
+        fontFamily: 'Viking',
         color: Colors.white,
         // fuente personalizada aqui
         ),
@@ -394,12 +602,12 @@ class SignUpState extends State<SignUp> with ValidationMixin {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("SignUp"),
-          content: new Text("Usuario creado correctamente!"),
+          title: new Text("SignUp", style:TextStyle(fontFamily:'Viking')),
+          content: new Text("Usuario creado correctamente!", style:TextStyle(fontFamily:'Morris')),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
-              child: new Text("Cerrar"),
+              child: new Text("Cerrar", style:TextStyle(fontFamily:'Viking')),
               onPressed: () {
                 Navigator.of(context).pop();
               },

@@ -11,7 +11,9 @@ var userSchema = Schema({
     email: { type: String },
     pass: { type: String },
     hobbies: { type: Array },
-    comunidades: { type: Array }
+    comunidades: { type: Array },
+    bio: { type: String },
+    foto: { type: String }
 });
 
 module.exports = mongoose.model('Users', userSchema);

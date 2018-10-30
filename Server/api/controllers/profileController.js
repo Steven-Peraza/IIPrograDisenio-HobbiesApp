@@ -18,21 +18,27 @@ exports.getData = (req, res) => {
 }
 
 exports.editData = (req, res) => {
-    const newUser = new Users({
-        _id: new mongoose.Types.ObjectId(),
-        name: req.body['name'],
-        lastName: req.body['lastName'],
-        nick: req.body['nick'],
-        ubicacion: req.body['ubicacion'],
-        email: req.body['email'],
-        pass: req.body['pass'],
-        hobbies: req.body['hobbies'],
-        comunidades: req.body['comunidades']
-    });
-    newUser.save().then((result) => {
-        console.log(result);
-    }).catch((err) => {
-        console.log(err);
-    });
-    res.status(201).send(newUser);
+    console.log(req.body);
+    Users.findOne({
+            _id: req.body['idActual']
+        })
+        .then((user) => {
+            console.log('User en el then ' + user);
+            user.name = req.body['name'];
+            user.lastName = req.body['lastName'];
+            user.nick = req.body['nick'];
+            user.ubicacion = req.body['ubicacion'];
+            user.email = req.body['email'];
+            user.pass = req.body['pass'];
+            user.hobbies = req.body['hobbies'];
+            user.comunidades = req.body['comunidades'];
+            user.bio = req.body['bio'];
+            user.foto = req.body['foto'];
+            user
+                .save()
+                .then((result) => {
+                    console.log(result);
+                    res.status(201).send(result);
+                });
+        });
 }

@@ -15,7 +15,7 @@ class Login extends StatefulWidget {
 class LoginState extends State<Login> with ValidationMixin {
   
   void login(String email,String pass) async {
-    Uri uri = new Uri.http("192.168.1.112:3000", "/user/login");
+    Uri uri = new Uri.http("192.168.1.125:3000", "/user/login");
     Map<String,dynamic> jsonUser = {
       'email':email,
       'pass':pass
@@ -26,10 +26,13 @@ class LoginState extends State<Login> with ValidationMixin {
     };
     var finalResponse = await post(uri, body: json.encode(jsonUser), headers: headers)
       .then((response){
-        setState(() {
+        if (this.mounted){
+          setState(() {
           email = '';
           pass = '';
-        });
+        });   
+        }
+
         if (response.statusCode == 201) {
             var extractdata = json.decode(response.body);
             print(extractdata['_id']);
@@ -47,7 +50,7 @@ class LoginState extends State<Login> with ValidationMixin {
                   home: Scaffold(
                     resizeToAvoidBottomPadding: false,
                     appBar: AppBar(
-                      title: Text('The Shire'),
+                      title: Text('The Shire',style: TextStyle(fontFamily: 'Viking'),),
                       centerTitle: true,
                       backgroundColor: Colors.green,
                       actions: <Widget>[
@@ -57,7 +60,9 @@ class LoginState extends State<Login> with ValidationMixin {
                         ),
                       ],
                     ),
-                    body: Profile(idActual: extractdata['_id']),
+                    body: Profile(idActual: extractdata['_id'], nombre: extractdata['name'], apellidos: extractdata['lastName'],
+                                  email: extractdata['email'], pass: extractdata['pass'], bio: extractdata['bio'], nick: extractdata['nick'],
+                                  ubicacion: extractdata['ubicacion'], hobbitses: extractdata['hobbies'], comus: extractdata['comunidades']),
                   ),
                 )
               ),
@@ -84,6 +89,7 @@ class LoginState extends State<Login> with ValidationMixin {
               title: new Text(
                 'Inicio de Sesion:',
                 style: TextStyle(
+                  fontFamily: 'Viking',
                   fontSize: 20.0,
                   color: Colors.black,
                   // fuente personalizada aqui
@@ -118,6 +124,11 @@ class LoginState extends State<Login> with ValidationMixin {
   Widget emailField() {
     return TextFormField(
       keyboardType:TextInputType.emailAddress,
+      style: TextStyle(
+        fontFamily: 'Morris',
+        fontSize: 20.0,
+        color: Colors.black,
+      ),
       decoration: InputDecoration(
         labelText: 'Email:',
         hintText: 'theShire@middleearth.com',
@@ -131,6 +142,11 @@ class LoginState extends State<Login> with ValidationMixin {
 
   Widget passField() {
     return TextFormField(
+      style: TextStyle(
+        fontFamily: 'Morris',
+        fontSize: 20.0,
+        color: Colors.black,
+      ),
       obscureText: true,
       decoration: InputDecoration(
         labelText: 'Password:',
@@ -155,6 +171,7 @@ class LoginState extends State<Login> with ValidationMixin {
       child: Text(
         'Ingresar',
         style: TextStyle(
+          fontFamily: 'Viking',
         color: Colors.white,
         // fuente personalizada aqui
         ),
@@ -167,7 +184,8 @@ class LoginState extends State<Login> with ValidationMixin {
     return  Text(
       'No posees cuenta aun?',
       style: TextStyle(
-        fontSize: 20.0,
+        fontFamily: 'Morris',
+        fontSize: 35.0,
         // fuente personalizada aqui
         ),
       );
@@ -177,7 +195,8 @@ class LoginState extends State<Login> with ValidationMixin {
     return  Text(
       'Unete a la comunidad del anillo!',
       style: TextStyle(
-        fontSize: 15.0,
+        fontFamily: 'Morris',
+        fontSize: 30.0,
         // fuente personalizada aqui
         ),
       );
@@ -200,7 +219,7 @@ class LoginState extends State<Login> with ValidationMixin {
                   home: Scaffold(
                     resizeToAvoidBottomPadding: false,
                     appBar: AppBar(
-                      title: Text('The Shire'),
+                      title: Text('The Shire',style: TextStyle(fontFamily: 'Viking'),),
                       centerTitle: true,
                       backgroundColor: Colors.green,
                       actions: <Widget>[
@@ -219,6 +238,7 @@ class LoginState extends State<Login> with ValidationMixin {
       child: Text(
         'Unirse',
         style: TextStyle(
+          fontFamily: 'Viking',
         color: Colors.white,
         // fuente personalizada aqui
         ),
@@ -234,12 +254,12 @@ class LoginState extends State<Login> with ValidationMixin {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Contraseña o correo incorrectos"),
-          content: new Text("Intente de nuevo!"),
+          title: new Text("Contraseña o correo incorrectos",style: TextStyle(fontFamily: 'Viking'),),
+          content: new Text("Intente de nuevo!",style: TextStyle(fontFamily: 'Morris'),),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
-              child: new Text("Cerrar"),
+              child: new Text("Cerrar",style: TextStyle(fontFamily: 'Viking'),),
               onPressed: () {
                 Navigator.of(context).pop();
               },
