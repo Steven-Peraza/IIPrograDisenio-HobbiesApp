@@ -29,7 +29,7 @@ class Profile extends StatelessWidget {
               pinned: true,
               centerTitle: true,
               flexibleSpace: new DefaultTabController(
-                length: 2,
+                length: 3,
                 child: Scaffold(
                   appBar: AppBar(
                     backgroundColor: Colors.amber[100],
@@ -38,6 +38,16 @@ class Profile extends StatelessWidget {
                       tabs: [
                         Tab(child: new FlatButton(
                           child: new Text("Profile",style: TextStyle(fontSize: 15.0,
+                              color: Colors.black,
+                              fontFamily: 'Viking',
+                              ),
+                            ),
+                            onPressed: () {
+                            },
+                          ),
+                        ),
+                        Tab(child: new FlatButton(
+                          child: new Text("Comus",style: TextStyle(fontSize: 15.0,
                               color: Colors.black,
                               fontFamily: 'Viking',
                               ),
@@ -117,10 +127,6 @@ class Profile extends StatelessWidget {
             hobbitlabel(),
             Container(margin: EdgeInsets.only(top: 10.0)),
             hobbitText(),
-            Container(margin: EdgeInsets.only(top: 40.0)),
-            comulabel(),
-            Container(margin: EdgeInsets.only(top: 10.0)),
-            comuGrid(),
             Container(margin: EdgeInsets.only(top: 40.0)),
             editButton(),    
           ],
@@ -298,39 +304,5 @@ class Profile extends StatelessWidget {
         // fuente personalizada aqui
         ),
       );
-  }
-
-  Widget comulabel() {
-      return  Text(
-        'Comunidades Miembro:',
-        style: TextStyle(
-          fontFamily: 'Viking',
-          fontSize: 15.0,
-          // fuente personalizada aqui
-          ),
-        );
-  }
-
-  Widget comuGrid() {
-    return GridView.extent(
-      shrinkWrap: true,
-      maxCrossAxisExtent: 150.0,
-      padding: const EdgeInsets.all(4.0),
-      mainAxisSpacing: 4.0,
-      crossAxisSpacing: 4.0,
-      children: <Widget>[
-        Image.asset(
-          'assets/images/essiri.png',
-          semanticLabel: 'Comunidad X',
-        ),
-        Image.asset(
-          'assets/images/essiri.png',
-          semanticLabel: 'Comunidad X',
-        ),
-        Image.asset(
-          'assets/images/essiri.png',
-          semanticLabel: 'Comunidad X',
-        ),
-      ]);
   }
 }
