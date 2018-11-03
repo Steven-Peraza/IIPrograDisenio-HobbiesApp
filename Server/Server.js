@@ -4,12 +4,14 @@ const app = express()
 
 userRouter = require('./api/Routes/userRouter')
 profileRouter = require('./api/routes/profileRouter')
+publicationsRouter = require('./api/Routes/publicationRouter')
 hobbitRouter = require('./api/routes/hobbitRouter')
 comusRouter = require('./api/routes/comusRouter')
 mongoose = require('mongoose')
     // VARIABLES 
 var MongoClient = require('mongodb').MongoClient;
-var mongo_uri = "ACM1PT";
+var mongo_uri = process.env.MONGO_URI;
+
 
 const db = mongoose.connect(mongo_uri, { useNewUrlParser: true });
 
@@ -18,6 +20,7 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use('/user', userRouter);
 app.use('/profiles', profileRouter);
+app.use('/publications', publicationsRouter);
 app.use('/hobbit', hobbitRouter);
 app.use('/comus', comusRouter);
 app.get('/', (req, res) => {
