@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../mixins/validation_mixin.dart';
+import '../CONSTANTS.dart';
 import 'profile.dart';
 import 'package:http/http.dart' show post, get;
 import 'dart:convert';
@@ -59,7 +60,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
   }
 
   void getHobbitses() async {
-    Uri uri = new Uri.http("192.168.1.125:3000", "/hobbit/getHobbit");
+    Uri uri = new Uri.http(CONSTANTS.BASE_URL, "/hobbit/getHobbit");
     var response = await get(uri);
     if (response.statusCode == 201) {
     // If server returns an OK response, parse the JSON
@@ -77,7 +78,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
   }
 
   void sendEditUser() async{
-    Uri uri = new Uri.http("192.168.1.125:3000", "/profiles/editProfile");
+    Uri uri = new Uri.https(CONSTANTS.BASE_URL, "/profiles/editProfile");
     Map<String,dynamic> jsonUser = {
       'idActual':widget.idActual,
       'name':nombre,
@@ -109,7 +110,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
   }
 
   void postHobb(String newHobbit) async {
-    Uri uri = new Uri.http("192.168.1.125:3000", "/hobbit/newHobbit");
+    Uri uri = new Uri.https(CONSTANTS.BASE_URL, "/hobbit/newHobbit");
     Map<String,dynamic> jsonUser = {
       'name':newHobbit,
     };
@@ -215,7 +216,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
     );
     }
   void getData() async {
-    Uri uri = new Uri.http("192.168.1.125:3000", "/profiles/getProfile");
+    Uri uri = new Uri.https(CONSTANTS.BASE_URL, "/profiles/getProfile");
     Map<String,dynamic> jsonUser = {
       'id':widget.idActual
     };

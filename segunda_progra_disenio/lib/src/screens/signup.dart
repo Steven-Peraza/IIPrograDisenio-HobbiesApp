@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' show post, get;
 import '../mixins/validation_mixin.dart';
 import 'dart:convert';
+import '../CONSTANTS.dart';
 
 class SignUp extends StatefulWidget {
   createState() {
@@ -40,7 +41,7 @@ class SignUpState extends State<SignUp> with ValidationMixin {
   }
 
   void sendNewUser() async {
-    Uri uri = new Uri.http("192.168.1.125:3000", "/user/signup");
+    Uri uri = new Uri.http(CONSTANTS.BASE_URL, "/user/signup");
     Map<String,dynamic> jsonUser = {
       'name':nombre,
       'lastName':apellidos,
@@ -78,7 +79,7 @@ class SignUpState extends State<SignUp> with ValidationMixin {
   }
 
   void getHobbitses() async {
-    Uri uri = new Uri.http("192.168.1.125:3000", "/hobbit/getHobbit");
+    Uri uri = new Uri.http(CONSTANTS.BASE_URL, "/hobbit/getHobbit");
     var response = await get(uri);
     if (response.statusCode == 201) {
     // If server returns an OK response, parse the JSON
@@ -96,7 +97,7 @@ class SignUpState extends State<SignUp> with ValidationMixin {
   }
 
   void postHobb(String newHobbit) async {
-    Uri uri = new Uri.http("192.168.1.125:3000", "/hobbit/newHobbit");
+    Uri uri = new Uri.http(CONSTANTS.BASE_URL, "/hobbit/newHobbit");
     Map<String,dynamic> jsonUser = {
       'name':newHobbit,
     };
