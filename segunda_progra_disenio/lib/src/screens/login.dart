@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' show get, post;
+import 'package:http/http.dart' show post;
 import '../mixins/validation_mixin.dart';
 import 'dart:convert';
 import '../CONSTANTS.dart';
