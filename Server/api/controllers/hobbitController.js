@@ -1,4 +1,4 @@
-const Hobbit = require('../models/hobbit');
+const Hobbit = require('../Models/hobbit');
 const mongoose = require('mongoose');
 
 exports.addHobby = (req, res) => {

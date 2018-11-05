@@ -3,10 +3,10 @@ express = require('express')
 const app = express()
 
 userRouter = require('./api/Routes/userRouter')
-profileRouter = require('./api/routes/profileRouter')
+profileRouter = require('./api/Routes/profileRouter')
 publicationsRouter = require('./api/Routes/publicationRouter')
-hobbitRouter = require('./api/routes/hobbitRouter')
-comusRouter = require('./api/routes/comusRouter')
+hobbitRouter = require('./api/Routes/hobbitRouter')
+comusRouter = require('./api/Routes/comusRouter')
 mongoose = require('mongoose')
     // VARIABLES 
 var MongoClient = require('mongodb').MongoClient;

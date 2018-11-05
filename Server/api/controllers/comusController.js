@@ -1,4 +1,4 @@
-const Comus = require('../models/comus');
+const Comus = require('../Models/comus');
 const mongoose = require('mongoose');
 
 exports.getComusByHobby = (req, res) => {

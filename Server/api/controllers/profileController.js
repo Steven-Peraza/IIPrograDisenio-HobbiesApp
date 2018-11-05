@@ -1,4 +1,4 @@
-const Users = require('../models/user');
+const Users = require('../Models/user');
 const mongoose = require('mongoose');
 
 exports.getData = (req, res) => {

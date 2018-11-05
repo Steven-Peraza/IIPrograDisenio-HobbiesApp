@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'editProfile.dart';
+import 'Wall/wall.dart';
 
 
 class Profile extends StatelessWidget {
@@ -73,28 +74,7 @@ class Profile extends StatelessWidget {
                                       cursorColor: Colors.green,
                                       accentColor: Colors.green,
                                     ),
-                                    home: Scaffold(
-                                      resizeToAvoidBottomPadding: false,
-                                      appBar: AppBar(
-                                        title: Text('The Shire',style: TextStyle(fontSize: 20.0,
-                                          color: Colors.black,
-                                          fontFamily: 'Viking',
-                                          ),
-                                        ),
-                                        centerTitle: true,
-                                        backgroundColor: Colors.green,
-                                        actions: <Widget>[
-                                          IconButton(
-                                            icon: Image.asset('assets/images/bag_end_alternate_1.png'),
-                                            onPressed: () {},
-                                          ),
-                                        ],
-                                      ),
-                                      /*body: EditProfile(idActual: idActual, nombre: nombre, apellidos: apellidos, email: email,
-                                                        pass: pass, bio: bio, nick: nick, ubicacion: ubicacion, hobbitses: hobbitses,
-                                                        comus: comus
-                                                        ),*/
-                                    )
+                                    home: Wall() // Aqui va el Muro *******
                                   ),
                                 ),
                               );
