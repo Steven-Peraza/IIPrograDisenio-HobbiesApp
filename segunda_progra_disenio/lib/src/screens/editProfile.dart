@@ -133,7 +133,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
   }
 
   void postComu(String newComu, String hobSelect, String descrip) async {
-    Uri uri = new Uri.http("192.168.1.125:3000", "/comus/newComu");
+    Uri uri = new Uri.http(CONSTANTS.BASE_URL, "/comus/newComu");
     Map<String,dynamic> jsonUser = {
       'name':newComu,
       'hobby':hobSelect,
@@ -158,7 +158,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
   }
 
   void getComus() async {
-    Uri uri = new Uri.http("192.168.1.125:3000", "/comus/getComus");
+    Uri uri = new Uri.http(CONSTANTS.BASE_URL, "/comus/getComus");
     Map<String,dynamic> jsonUser = {
       'hobbies':widget.hobbitses
     };
@@ -181,7 +181,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
   }
 
   void joinComus(String joinNewComu) async {
-    Uri uri = new Uri.http("192.168.1.125:3000", "/comus/joinComu");
+    Uri uri = new Uri.http(CONSTANTS.BASE_URL, "/comus/joinComu");
     Map<String,dynamic> jsonUser = {
       'name':joinNewComu,
       'idActual': widget.idActual
@@ -203,7 +203,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
   }
 
   void addNewHobby(String joinNewHobby) async {
-    Uri uri = new Uri.http("192.168.1.125:3000", "/profiles/addHobby");
+    Uri uri = new Uri.http(CONSTANTS.BASE_URL, "/profiles/addHobby");
     Map<String,dynamic> jsonUser = {
       'newHobby':joinNewHobby,
       'idActual': widget.idActual

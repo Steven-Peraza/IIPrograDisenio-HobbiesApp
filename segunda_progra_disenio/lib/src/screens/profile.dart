@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' show post;
 import 'dart:convert';
-
+import '../CONSTANTS.dart';
 import 'editProfile.dart';
 import 'comunities.dart';
 
@@ -25,7 +25,7 @@ class Profile extends StatelessWidget {
               this.nick, this.ubicacion}) : super(key: key);
 
 void getComus() async {
-    Uri uri = new Uri.http("192.168.1.125:3000", "/comus/getComuUser");
+    Uri uri = new Uri.http(CONSTANTS.BASE_URL, "/comus/getComuUser");
     Map<String,dynamic> jsonUser = {
       'idActual':idActual
     };
