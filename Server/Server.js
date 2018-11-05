@@ -10,7 +10,7 @@ comusRouter = require('./api/routes/comusRouter')
 mongoose = require('mongoose')
     // VARIABLES 
 var MongoClient = require('mongodb').MongoClient;
-var mongo_uri = process.env.MONGO_URI;
+var mongo_uri = "mongodb://admin:admin@theshiredb-shard-00-00-mtwvf.mongodb.net:27017,theshiredb-shard-00-01-mtwvf.mongodb.net:27017,theshiredb-shard-00-02-mtwvf.mongodb.net:27017/test?ssl=true&replicaSet=TheShireDB-shard-0&authSource=admin&retryWrites=true";
 
 
 const db = mongoose.connect(mongo_uri, { useNewUrlParser: true });
