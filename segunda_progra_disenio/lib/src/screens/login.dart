@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' show post;
 import '../mixins/validation_mixin.dart';
 import 'dart:convert';
-
+import '../CONSTANTS.dart';
 import 'profile.dart';
 import 'signup.dart';
 
@@ -15,7 +15,7 @@ class Login extends StatefulWidget {
 class LoginState extends State<Login> with ValidationMixin {
   
   void login(String email,String pass) async {
-    Uri uri = new Uri.http("192.168.1.125:3000", "/user/login");
+    Uri uri = new Uri.https(CONSTANTS.BASE_URL, "/user/login");
     Map<String,dynamic> jsonUser = {
       'email':email,
       'pass':pass
