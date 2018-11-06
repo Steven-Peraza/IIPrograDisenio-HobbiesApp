@@ -32,10 +32,14 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
   String email = '';
   String pass = '';
   String newHobbit = '';
+  String newDescr = '';
+  String newComu = '';
   String bio = '';
   String foto = '';
   List<dynamic> hobbitses = [];
+  List<dynamic> comusFinal = [];
   List<dynamic> comusv2 = [];
+  List<dynamic> comusv3 = [];
   // valores de la lista de hobbies
   Map<String, bool> values = {
 
@@ -46,6 +50,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
   };
 
   String searchHobbie = '';
+  String searchCommie = '';
 
   Map<String, bool> comus = {
     'Alcoholicos Anonimos': true,
@@ -87,8 +92,6 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
       'ubicacion':ubicacion,
       'email':email,
       'pass':pass,
-      'hobbies':hobbitses,
-      'comunidades':comusv2,
       'bio': bio,
       'foto': foto
     };
@@ -124,6 +127,95 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
           setState(() {
             newHobbit = '';
           });
+        }
+        //_showDialog(); 
+      });
+  }
+
+  void postComu(String newComu, String hobSelect, String descrip) async {
+    Uri uri = new Uri.http(CONSTANTS.BASE_URL, "/comus/newComu");
+    Map<String,dynamic> jsonUser = {
+      'name':newComu,
+      'hobby':hobSelect,
+      'descripcion': descrip,
+      'users':[widget.idActual],
+      'foto':""
+    };
+    Map<String,String> headers = {
+    'Content-type' : 'application/json',
+    'Accept': 'application/json',
+    };
+    var finalResponse = await post(uri, body: json.encode(jsonUser), headers: headers)
+      .then((response){
+        if (this.mounted){
+          setState(() {
+            newHobbit = '';
+            searchHobbie = '';
+          });
+        }
+        //_showDialog(); 
+      });
+  }
+
+  void getComus() async {
+    Uri uri = new Uri.http(CONSTANTS.BASE_URL, "/comus/getComus");
+    Map<String,dynamic> jsonUser = {
+      'hobbies':widget.hobbitses
+    };
+    Map<String,String> headers = {
+    'Content-type' : 'application/json',
+    'Accept': 'application/json',
+    };
+    var finalResponse = await post(uri, body: json.encode(jsonUser), headers: headers)
+      .then((response){
+        if (this.mounted){
+          var extractdata = json.decode(response.body);
+          //print(extractdata);
+          setState(() {
+            print("Pase por el get: "+extractdata.toString());
+            comusv2 = extractdata;
+          });
+        }
+        //_showDialog(); 
+      });
+  }
+
+  void joinComus(String joinNewComu) async {
+    Uri uri = new Uri.http(CONSTANTS.BASE_URL, "/comus/joinComu");
+    Map<String,dynamic> jsonUser = {
+      'name':joinNewComu,
+      'idActual': widget.idActual
+    };
+    Map<String,String> headers = {
+    'Content-type' : 'application/json',
+    'Accept': 'application/json',
+    };
+    var finalResponse = await post(uri, body: json.encode(jsonUser), headers: headers)
+      .then((response){
+        if (this.mounted){
+          setState(() {
+            comusFinal = widget.comus;
+            comusFinal.add(joinNewComu);
+          });
+        }
+        //_showDialog(); 
+      });
+  }
+
+  void addNewHobby(String joinNewHobby) async {
+    Uri uri = new Uri.http(CONSTANTS.BASE_URL, "/profiles/addHobby");
+    Map<String,dynamic> jsonUser = {
+      'newHobby':joinNewHobby,
+      'idActual': widget.idActual
+    };
+    Map<String,String> headers = {
+    'Content-type' : 'application/json',
+    'Accept': 'application/json',
+    };
+    var finalResponse = await post(uri, body: json.encode(jsonUser), headers: headers)
+      .then((response){
+        if (this.mounted){
+          print("Nuevo hobby anyadido");
         }
         //_showDialog(); 
       });
@@ -168,6 +260,8 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
             Container(margin: EdgeInsets.only(top: 25.0)),
             bioField(),
             Container(margin: EdgeInsets.only(top: 40.0)),
+            createButton(),
+            Container(margin: EdgeInsets.only(top: 40.0)),            
             textoMedio(),
             Container(margin: EdgeInsets.only(top: 25.0)),
             viewHobbitButton(),
@@ -176,11 +270,13 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
             Container(margin: EdgeInsets.only(top: 25.0)),
             createNewHobbitButton(),
             Container(margin: EdgeInsets.only(top: 40.0)),
+            textoMedio5(),
+            Container(margin: EdgeInsets.only(top: 25.0)),
+            joinComuButton(),
+            Container(margin: EdgeInsets.only(top: 40.0)),
             textoMedio4(),
             Container(margin: EdgeInsets.only(top: 25.0)),
-            comuList(),
-            Container(margin: EdgeInsets.only(top: 40.0)),
-            createButton(),
+            createNewComuButton(),
             Container(margin: EdgeInsets.only(top: 40.0)),
             returnButton(),
 
@@ -283,22 +379,6 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
     );
   }
 
-  Widget comuList() {
-    return ListView(
-      shrinkWrap: true,
-        children: comus.keys.map((String key) {
-          return new CheckboxListTile(
-            title: new Text(key,style: TextStyle(fontFamily:'Morris',fontSize: 20.0),),
-            value: comus[key],
-            onChanged: (bool value) {
-              setState(() {
-                comus[key] = value;
-              });
-            },
-          );
-        }).toList()
-      );
-  }
 
   Widget viewHobbitButton() {
     return RaisedButton(
@@ -320,6 +400,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
   }
 
   void hobbitList() {
+    var textController = new TextEditingController();
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -333,6 +414,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
                   "Busqueda de Hobbies",style: TextStyle(fontFamily:'Viking'),
                 ),
                 new TextField(
+                  controller: textController,
                   style: TextStyle(fontFamily:'Morris',fontSize: 20.0, color: Colors.black),
                   decoration: InputDecoration(
                     labelText: 'Hobbie a Buscar:',
@@ -357,6 +439,8 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
                         setState(() {
                           newValues[key] = value;
                           values[key] = value;
+                          textController.text = key;
+                          searchHobbie = key;
                         });
                       },
                     );
@@ -369,6 +453,29 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
           
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Add Hobby",style: TextStyle(fontFamily:'Viking'),),
+              onPressed: () {
+                addNewHobby(searchHobbie);
+                showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return new AlertDialog(
+                            title: new Text("Hobbitses Preferidos", style: TextStyle(
+                              fontFamily: 'Viking',
+                              // fuente personalizada aqui
+                              ),
+                            ),
+                            content: new Text("Nuevo Hobby agregado: $searchHobbie!",style: TextStyle(
+                              fontFamily: 'Morris',
+                              // fuente personalizada aqui
+                              ),
+                            ),
+                          );
+                        }
+                      );
+              },
+            ),
             new FlatButton(
               child: new Text("Cerrar",style: TextStyle(fontFamily:'Viking'),),
               onPressed: () {
@@ -392,6 +499,17 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
         newValues[joder] = entry.value;
       }
     }
+  }
+
+  void searchCommies(String text){
+    print("comusV2"+comusv2.toString());
+    //print(widget.comus);
+    for (var entry in comusv2) {
+      if ((entry.startsWith(text)) && (!(widget.comus.contains(entry)))) {
+        comusv3.add(entry);
+      }
+    }
+    print(comusv3);
   }
 
   Widget rowN1() {
@@ -544,12 +662,13 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
       onPressed: () {
         if (formKey.currentState.validate()) {
           formKey.currentState.save();
+          getHobbitses();
           addHobbitses();
           sendEditUser();
         }
       },
       child: Text(
-        'Edit Profile',
+        'Edit Personal Data',
         style: TextStyle(
           fontFamily: 'Viking',
           color: Colors.white,
@@ -596,13 +715,134 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
 
   Widget textoMedio4() {
     return  Text(
-      'Comunidades Miembro:',
+      'Crear Nuevas Comunidades:',
       style: TextStyle(
         fontFamily: 'Viking',
         fontSize: 15.0,
         // fuente personalizada aqui
         ),
       );
+  }
+
+  Widget textoMedio5() {
+    return  Text(
+      'Unirse a una Comunidad:',
+      style: TextStyle(
+        fontFamily: 'Viking',
+        fontSize: 15.0,
+        // fuente personalizada aqui
+        ),
+      );
+  }
+
+  Widget joinComuButton() {
+    return RaisedButton(
+      onPressed: () {
+        getComus();
+        joiningComu();
+      },
+      child: Text(
+        'Join Community',
+        style: TextStyle(
+          fontFamily: 'Viking',
+          color: Colors.white,
+        // fuente personalizada aqui
+        ),
+      ),
+      color: Colors.green,
+    );
+  }
+
+  void joiningComu(){
+    var textController = new TextEditingController();
+    String comuActual;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Unete a una comunidad!",style: TextStyle(fontFamily:'Viking'),),
+          content: new SingleChildScrollView(
+            child: new Column(
+              children: <Widget>[
+                new Text(
+                  "Busqueda de Comunidades segun tus hobbies!",style: TextStyle(fontFamily:'Viking'),
+                ),
+                new TextField(
+                  controller: textController,
+                  style: TextStyle(fontFamily:'Morris',fontSize: 20.0, color: Colors.black),
+                  decoration: InputDecoration(
+                    labelText: 'Comu a Buscar:',
+                    hintText: 'Comunidad del Anillo',
+                  ),
+                  //validator: validateNull,
+                  onSubmitted: (String value) {
+                    searchCommie = value;
+                    searchCommies(searchCommie);
+                  },
+                  onChanged: (String value){
+                    comusv3 = [];
+                  },
+                ),
+                new ListView(
+                shrinkWrap: true,
+                  children:  new List<Widget>.generate(comusv3.length, (index) {
+                    comuActual = comusv3[index];
+                    print('ListItem:' + comuActual);
+                        return new ListTile( 
+                            title: new Text(comuActual,style: TextStyle(fontFamily:'Morris',fontSize: 20.0),),
+                                  onTap: () {
+                                    setState(() {
+                                      textController.text = comusv3[index];
+                                      searchCommie = comusv3[index];
+                                    });
+                                  },
+                          );
+                      }),
+                ),
+              ],
+            ),
+          ),
+              
+          
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Unirse",style: TextStyle(fontFamily:'Viking'),),
+              onPressed: () {
+                joinComus(searchCommie);
+                showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return new AlertDialog(
+                            title: new Text("Unete a una comunidad!", style: TextStyle(
+                              fontFamily: 'Viking',
+                              // fuente personalizada aqui
+                              ),
+                            ),
+                            content: new Text("Te has unido a la Comunidad de $searchCommie!",style: TextStyle(
+                              fontFamily: 'Morris',
+                              // fuente personalizada aqui
+                              ),
+                            ),
+                          );
+                        }
+                      );
+              },
+            ),
+            new FlatButton(
+              child: new Text("Cerrar",style: TextStyle(fontFamily:'Viking'),),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      },
+    );
+    setState(() {
+      newValues = {};
+    });
   }
 
   void creatingHobbit(){
@@ -635,7 +875,14 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
                   },
                 ),
                 new Container(margin: EdgeInsets.only(top: 25.0)),
-                new FlatButton(
+              ],
+            ),
+            
+          ),    
+          
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
                   onPressed: () {
                     if ( newHobbit.length >= 4 ) {
                       postHobb(newHobbit);
@@ -680,22 +927,13 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
                     
                   },
                   child: Text(
-                    'Agregar Hobbit',
+                    'New Hobbit',
                     style: TextStyle(
                       fontFamily: 'Viking',
-                      color: Colors.white,
                     // fuente personalizada aqui
                     ),
                   ),
-                  color: Colors.green,
                 ),
-              ],
-            ),
-            
-          ),    
-          
-          actions: <Widget>[
-            // usually buttons at the bottom of the dialog
             new FlatButton(
               child: new Text("Cerrar",style: TextStyle(
                 fontFamily: 'Viking',
@@ -719,6 +957,187 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
       },
       child: Text(
         'Create New Hobbit',
+        style: TextStyle(
+          fontFamily: 'Viking',
+          color: Colors.white,
+        // fuente personalizada aqui
+        ),
+      ),
+      color: Colors.green,
+    );
+  }
+
+
+  void creatingComu(){
+    var textController = new TextEditingController();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Crea tu Comunidad",style: TextStyle(
+            fontFamily: 'Viking',
+            // fuente personalizada aqui
+            ),
+          ),
+          content: new SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                new TextField(
+                  style: TextStyle(
+                    fontFamily: 'Morris',
+                    fontSize: 20.0,
+                    color: Colors.black
+                    // fuente personalizada aqui
+                    ),
+                  decoration: InputDecoration(
+                    labelText: 'Comunidad a crear:',
+                    hintText: 'Comunidad del anillo',
+                  ),
+                  onSubmitted: (String value) {
+                    setState(() {
+                      newComu = value;                 
+                    });
+
+                  },
+                ),
+                new TextField(
+                  style: TextStyle(
+                    fontFamily: 'Morris',
+                    fontSize: 20.0,
+                    color: Colors.black
+                    // fuente personalizada aqui
+                    ),
+                  decoration: InputDecoration(
+                    labelText: 'Descripcion:',
+                    hintText: 'Comunidad dedicada a salvar la Tierra Media',
+                  ),
+                  onSubmitted: (String value) {
+                    setState(() {
+                      newDescr = value;                 
+                    });
+
+                  },
+                ),
+                new TextField(
+                  controller: textController,
+                  style: TextStyle(fontFamily:'Morris',fontSize: 20.0, color: Colors.black),
+                  decoration: InputDecoration(
+                    labelText: 'Hobbie a Buscar:',
+                    hintText: 'Cazar Huargos',
+                  ),
+                  //validator: validateNull,
+                  onSubmitted: (String value) {
+                    searchHobbie = value;
+                    searchHobbiton(searchHobbie);
+                  },
+                  onChanged: (String value){
+                    newValues = {};
+                  },
+                ),
+                new ListView(
+                shrinkWrap: true,
+                  children: newValues.keys.map((String key) {
+                    return new CheckboxListTile(
+                      title: new Text(key,style: TextStyle(fontFamily:'Morris',fontSize: 20.0),),
+                      value: newValues[key],
+                      onChanged: (bool value) {
+                        setState(() {
+                          textController.text = key;
+                          searchHobbie = key;
+                          newValues = {};
+                        });
+                      },
+                    );
+                  }).toList()
+                ),
+                new Container(margin: EdgeInsets.only(top: 25.0)),
+              ],
+            ),
+            
+          ),    
+          
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+                        new FlatButton(
+                  onPressed: () {
+                    print("desc ="+newDescr);
+                    print("comu ="+newComu);
+                    print("hobb ="+searchHobbie);
+                    if (( newDescr.length >= 10 ) && ( newComu.length >= 10 ) && (searchHobbie != '')){
+                      postComu(newComu,searchHobbie,newDescr);
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return new AlertDialog(
+                            title: new Text("Nueva Commie", style: TextStyle(
+                              fontFamily: 'Viking',
+                              // fuente personalizada aqui
+                              ),
+                            ),
+                            content: new Text("Comunidad creada correctamente",style: TextStyle(
+                              fontFamily: 'Morris',
+                              fontSize: 20.0,
+                              // fuente personalizada aqui
+                              ),
+                            ),
+                          );
+                        }
+                      );
+                    }
+                    else{
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return new AlertDialog(
+                            title: new Text("Nueva Commie", style: TextStyle(
+                              fontFamily: 'Viking',
+                              // fuente personalizada aqui
+                              ),
+                            ),
+                            content: new Text("Error! Longitud Minima de los campos es de 10 caracteres O datos insuficientes.",style: TextStyle(
+                              fontFamily: 'Morris',
+                              // fuente personalizada aqui
+                              ),
+                            ),
+                          );
+                        }
+                      );
+                    }
+                    
+                  },
+                  child: Text(
+                    'Crear Comu',
+                    style: TextStyle(
+                      fontFamily: 'Viking',
+                    // fuente personalizada aqui
+                    ),
+                  ),
+                ),
+            new FlatButton(
+              child: new Text("Cerrar",style: TextStyle(
+                fontFamily: 'Viking',
+                // fuente personalizada aqui
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget createNewComuButton() {
+    return RaisedButton(
+      onPressed: () {
+        addValues();
+        creatingComu();
+      },
+      child: Text(
+        'Create New Comu',
         style: TextStyle(
           fontFamily: 'Viking',
           color: Colors.white,
