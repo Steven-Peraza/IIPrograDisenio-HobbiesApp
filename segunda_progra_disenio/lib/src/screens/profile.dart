@@ -3,11 +3,8 @@ import 'package:http/http.dart' show post;
 import 'dart:convert';
 import '../CONSTANTS.dart';
 import 'editProfile.dart';
-<<<<<<< HEAD
 import 'Wall/wall.dart';
-=======
 import 'comunities.dart';
->>>>>>> b097b22dc2d460759b312b2fa1472a708b01592f
 
 
 class Profile extends StatelessWidget {

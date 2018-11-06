@@ -18,7 +18,9 @@ List<PublicationModel> publicationsList = [];
 getPublications() async{
   final response = await get('https://'+CONSTANTS.BASE_URL+'/publications/getByHobby/Futbol');
   final parsedJson = json.decode(response.body) as List;
-  publicationsList = parsedJson.map((e)=> new PublicationModel.fromJason(e)).toList();
+  setState(() {
+      publicationsList = parsedJson.map((e)=> new PublicationModel.fromJason(e)).toList();
+    });
   print(publicationsList);
 }
 
