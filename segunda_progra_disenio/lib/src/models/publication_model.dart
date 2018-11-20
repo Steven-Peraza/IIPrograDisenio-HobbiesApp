@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class PublicationModel {
   String id;
   String text;
@@ -6,6 +8,7 @@ class PublicationModel {
   DateTime publicationDate;
   String type;
   String hobby;
+  String username;
 
   PublicationModel(
     this.id,
@@ -14,7 +17,8 @@ class PublicationModel {
     this.hobby,
     this.mediaLink,
     this.publicationDate,
-    this.type
+    this.type,
+    this.username
     );
 
   PublicationModel.fromJason(Map<String,dynamic> parsedJson){
@@ -25,6 +29,21 @@ class PublicationModel {
     this.text = parsedJson["text"];
     this.publicationDate = DateTime.parse(parsedJson["fechaPublicacion"]);
     this.hobby = parsedJson["hobby"];
+    this.username = parsedJson["username"];
+
+  }
+
+  String toJson(){
+    return json.encode({
+      'id':id,
+      'type':type,
+      'linkMultimedia':mediaLink,
+      'tipoMultimedia':mediaType,
+      'text':text,
+      'fechaPublicacion':publicationDate.toString(),
+      'hobby':hobby,
+      'username':username
+    });
   }
 
   

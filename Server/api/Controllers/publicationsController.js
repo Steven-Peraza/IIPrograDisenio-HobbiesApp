@@ -5,12 +5,14 @@ exports.addNewPublication = (req, res) => {
         _id: new mongoose.Types.ObjectId(),
         text: req.body["text"],
         tipoMultimedia: req.body["tipoMultimedia"],
-        linkMultimedia: "none",
+        linkMultimedia: req.body["linkMultimedia"],
         fechaPublicacion: Date.now(),
         type: req.body["type"],
         reacciones: [],
         comentarios: [],
-        hobby: req.body["hobby"]
+        hobby: req.body["hobby"],
+        username: req.body["username"]
+        
     });
     newPublication.save().then((result) => {
         console.log(result);

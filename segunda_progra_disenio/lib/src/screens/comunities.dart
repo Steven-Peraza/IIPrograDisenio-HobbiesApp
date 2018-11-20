@@ -1,26 +1,21 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' show post;
 import 'dart:convert';
-
+import '../models/profile_model.dart';
 import 'profile.dart';
+import '../../shared/CommonTabBar.dart';
 
 
 
 class Comus extends StatelessWidget {
-  final String idActual;
-  final String nombre;
-  final String apellidos;
-  final String nick;
-  final String ubicacion;
-  final String email;
-  final String pass;
-  final String bio;
-  final List<dynamic> hobbitses;
-  final List<dynamic> comus;
+  
+  final ProfileModel currentUser;
+  List<CameraDescription> cameras;
+
   BuildContext contexto;
 
-  Comus({Key key, this.idActual,  this.nombre, this.apellidos, this.comus, this.email, this.pass, this.bio, this.hobbitses,
-              this.nick, this.ubicacion}) : super(key: key);
+  Comus({Key key, this.currentUser, this.cameras }) : super(key: key);
 
   Widget build(BuildContext context) {
     contexto = context;
@@ -36,76 +31,7 @@ class Comus extends StatelessWidget {
                 child: Scaffold(
                   appBar: AppBar(
                     backgroundColor: Colors.amber[100],
-                    bottom: TabBar(
-                      indicatorColor: Colors.green,
-                      tabs: [
-                        Tab(child: new FlatButton(
-                          child: new Text("Profile",style: TextStyle(fontSize: 10.0,
-                              color: Colors.black,
-                              fontFamily: 'Viking',
-                              ),
-                            ),
-                            onPressed: () {
-                             Navigator.push(
-                                contexto,
-                                MaterialPageRoute(builder: (context) => MaterialApp(
-                                    title: 'The Shire',
-                                    theme: ThemeData(
-                                      primaryColor: Colors.green,
-                                      primarySwatch: Colors.green,
-                                      scaffoldBackgroundColor: Colors.amber[100],
-                                      cursorColor: Colors.green,
-                                      accentColor: Colors.green,
-                                    ),
-                                    home: Scaffold(
-                                      resizeToAvoidBottomPadding: false,
-                                      appBar: AppBar(
-                                        title: Text('The Shire',style: TextStyle(fontSize: 20.0,
-                                          color: Colors.black,
-                                          fontFamily: 'Viking',
-                                          ),
-                                        ),
-                                        centerTitle: true,
-                                        backgroundColor: Colors.green,
-                                        actions: <Widget>[
-                                          IconButton(
-                                            icon: Image.asset('assets/images/bag_end_alternate_1.png'),
-                                            onPressed: () {},
-                                          ),
-                                        ],
-                                      ),
-                                      body: new Profile(idActual: idActual, nombre: nombre, apellidos: apellidos, email: email,
-                                                        pass: pass, bio: bio, nick: nick, ubicacion: ubicacion, hobbitses: hobbitses,
-                                                        comus: comus
-                                                        ),
-                                    )
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        Tab(child: new FlatButton(
-                          child: new Text("Comus",style: TextStyle(fontSize: 10.0,
-                              color: Colors.black,
-                              fontFamily: 'Viking',
-                              ),
-                            ),
-                            onPressed: () {
-                            },
-                          ),
-                        ),
-                        Tab(child: new FlatButton(
-                          child: new Text("Muro",style: TextStyle(fontSize: 10.0,
-                              color: Colors.black,
-                              fontFamily: 'Viking',
-                              ),),
-                            onPressed: () {
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
+                    bottom: CommonNavigationTabBar.get(context: context, currentUser: currentUser, cameras: cameras),
                   ),
                 ),
               ),
@@ -120,8 +46,8 @@ class Comus extends StatelessWidget {
 
 List<Widget> creaTiles() {
     String comuActual;
-    return new List<Widget>.generate(comus.length, (index) {
-      comuActual = comus[index];
+    return new List<Widget>.generate(this.currentUser.comunidades.length, (index) {
+      comuActual = this.currentUser.comunidades[index];
            return new GridTile( 
               child: Container(child:Image.asset(
                   'assets/images/essiri.png',

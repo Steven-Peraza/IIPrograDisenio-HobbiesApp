@@ -11,7 +11,8 @@ var publicationSchema = Schema({
     type: { type: String },
     reacciones: { type: Array },
     comentarios: { type: Array },
-    hobby: {type: String}
+    hobby: {type: String},
+    username: {type: String}
 });
 
 module.exports = mongoose.model('Publication', publicationSchema);

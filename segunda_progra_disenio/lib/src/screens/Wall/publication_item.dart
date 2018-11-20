@@ -19,6 +19,7 @@ class PublicationItemState extends State<PublicationItem> {
     Widget build(BuildContext context) {
       // TODO: implement build
       return Card(
+        color: Colors.amber[200],
   child: Column(
     mainAxisSize: MainAxisSize.min,
     children: <Widget>[

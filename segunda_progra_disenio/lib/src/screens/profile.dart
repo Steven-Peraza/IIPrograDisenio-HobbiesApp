@@ -1,83 +1,24 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' show post;
+import 'package:segunda_progra_disenio/src/models/profile_model.dart';
 import 'dart:convert';
 import '../CONSTANTS.dart';
 import 'editProfile.dart';
 import 'Wall/wall.dart';
 import 'comunities.dart';
+import '../../shared/AppThemes.dart';
+import '../../shared/CommonTabBar.dart';
 
 
 class Profile extends StatelessWidget {
 
-  final String idActual;
-  final String nombre;
-  final String apellidos;
-  final String nick;
-  final String ubicacion;
-  final String email;
-  final String pass;
-  final String bio;
-  final List<dynamic> hobbitses;
-  final List<dynamic> comus;
+  final ProfileModel currentUser;
+  List<CameraDescription> cameras;
 
   BuildContext contexto;
 
-  Profile({Key key, this.idActual,  this.nombre, this.apellidos, this.comus, this.email, this.pass, this.bio, this.hobbitses,
-              this.nick, this.ubicacion}) : super(key: key);
-
-void getComus() async {
-    Uri uri = new Uri.http(CONSTANTS.BASE_URL, "/comus/getComuUser");
-    Map<String,dynamic> jsonUser = {
-      'idActual':idActual
-    };
-    Map<String,String> headers = {
-    'Content-type' : 'application/json',
-    'Accept': 'application/json',
-    };
-    var finalResponse = await post(uri, body: json.encode(jsonUser), headers: headers)
-      .then((response){
-        if (response.statusCode == 201) {
-          var extractdata = json.decode(response.body);
-          Navigator.push(
-            contexto,
-            MaterialPageRoute(builder: (context) => MaterialApp(
-                title: 'The Shire',
-                theme: ThemeData(
-                  primaryColor: Colors.green,
-                  primarySwatch: Colors.green,
-                  scaffoldBackgroundColor: Colors.amber[100],
-                  cursorColor: Colors.green,
-                  accentColor: Colors.green,
-                ),
-                home: Scaffold(
-                  resizeToAvoidBottomPadding: false,
-                  appBar: AppBar(
-                    title: Text('The Shire',style: TextStyle(fontSize: 20.0,
-                      color: Colors.black,
-                      fontFamily: 'Viking',
-                      ),
-                    ),
-                    centerTitle: true,
-                    backgroundColor: Colors.green,
-                    actions: <Widget>[
-                      IconButton(
-                        icon: Image.asset('assets/images/bag_end_alternate_1.png'),
-                        onPressed: () {},
-                      ),
-                    ],
-                  ),
-                  body: Comus(idActual: idActual, nombre: nombre, apellidos: apellidos, email: email,
-                                    pass: pass, bio: bio, nick: nick, ubicacion: ubicacion, hobbitses: hobbitses,
-                                    comus: extractdata),
-                )
-              ),
-            ),
-          );
-        }
-        //_showDialog(); 
-      });
-  }
-
+  Profile({Key key, this.currentUser, this.cameras}) : super(key: key);
   Widget build(BuildContext context) {
     contexto = context;
     return NestedScrollView(
@@ -92,56 +33,7 @@ void getComus() async {
                 child: Scaffold(
                   appBar: AppBar(
                     backgroundColor: Colors.amber[100],
-                    bottom: TabBar(
-                      indicatorColor: Colors.green,
-                      tabs: [
-                        Tab(child: new FlatButton(
-                          child: new Text("Profile",style: TextStyle(fontSize: 10.0,
-                              color: Colors.black,
-                              fontFamily: 'Viking',
-                              ),
-                            ),
-                            onPressed: () {
-                            },
-                          ),
-                        ),
-                        Tab(child: new FlatButton(
-                          child: new Text("Comus",style: TextStyle(fontSize: 10.0,
-                              color: Colors.black,
-                              fontFamily: 'Viking',
-                              ),
-                            ),
-                            onPressed: () {
-                              getComus();
-                            },
-                          ),
-                        ),
-                        Tab(child: new FlatButton(
-                          child: new Text("Muro",style: TextStyle(fontSize: 10.0,
-                              color: Colors.black,
-                              fontFamily: 'Viking',
-                              ),),
-                            onPressed: () {
-                              Navigator.push(
-                                contexto,
-                                MaterialPageRoute(builder: (context) => MaterialApp(
-                                    title: 'The Shire',
-                                    theme: ThemeData(
-                                      primaryColor: Colors.green,
-                                      primarySwatch: Colors.green,
-                                      scaffoldBackgroundColor: Colors.amber[100],
-                                      cursorColor: Colors.green,
-                                      accentColor: Colors.green,
-                                    ),
-                                    home: Wall() // Aqui va el Muro *******
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
+                    bottom: CommonNavigationTabBar.get(context: contexto, currentUser: this.currentUser, cameras: cameras),
                   ),
                 ),
               ),
@@ -182,13 +74,7 @@ void getComus() async {
               contexto,
               MaterialPageRoute(builder: (context) => MaterialApp(
                   title: 'The Shire',
-                  theme: ThemeData(
-                    primaryColor: Colors.green,
-                    primarySwatch: Colors.green,
-                    scaffoldBackgroundColor: Colors.amber[100],
-                    cursorColor: Colors.green,
-                    accentColor: Colors.green,
-                  ),
+                  theme: AppThemes.mainTheme,
                   home: Scaffold(
                     resizeToAvoidBottomPadding: false,
                     appBar: AppBar(
@@ -206,10 +92,7 @@ void getComus() async {
                         ),
                       ],
                     ),
-                    body: EditProfile(idActual: idActual, nombre: nombre, apellidos: apellidos, email: email,
-                                      pass: pass, bio: bio, nick: nick, ubicacion: ubicacion, hobbitses: hobbitses,
-                                      comus: comus
-                                      ),
+                    body: EditProfile(currentUser: this.currentUser),
                 )
               ),
             ),
@@ -247,7 +130,7 @@ void getComus() async {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                '$nombre',
+                ''+ currentUser.nombre,
                 style: TextStyle(
                   fontFamily: 'Morris',
                   fontSize: 25.0,
@@ -256,7 +139,7 @@ void getComus() async {
                 ),
               ),
               Text(
-                '$nick',
+                ''+currentUser.nick,
                 style: TextStyle(
                   fontFamily: 'Morris',
                   fontSize: 25.0,
@@ -265,7 +148,7 @@ void getComus() async {
                 ),
               ),
               Text(
-                '$ubicacion',
+                ''+ currentUser.ubicacion,
                 style: TextStyle(
                   fontFamily: 'Morris',
                   fontSize: 25.0,
@@ -283,7 +166,7 @@ void getComus() async {
 
   Widget emailText() {
     return  Text(
-      '$email',
+      ''+currentUser.email,
       style: TextStyle(
         fontFamily: 'Morris',
         fontSize: 20.0,
@@ -305,7 +188,7 @@ void getComus() async {
 
   Widget bioText() {
     return  Text(
-      '$bio',
+      ''+ currentUser.bio,
       style: TextStyle(
         fontFamily: 'Morris',
         fontSize: 20.0,
@@ -326,6 +209,7 @@ void getComus() async {
   }
 
   Widget hobbitText() {
+    List hobbitses = currentUser.hobbies;
     String textoFinal = '';
     for (var i = 0; i < hobbitses.length; i++) {
       if (i == 0) {

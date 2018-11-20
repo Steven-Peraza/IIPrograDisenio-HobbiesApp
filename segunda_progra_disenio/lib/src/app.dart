@@ -1,8 +1,11 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'screens/login.dart';
 
 
 class App extends StatelessWidget {
+  List<CameraDescription> cameras;
+  App(this.cameras);
   Widget build(context) {
     return MaterialApp(
       title: 'The Shire',
@@ -27,7 +30,7 @@ class App extends StatelessWidget {
             ),
           ],
         ),
-        body: Login(),
+        body: Login(cameras),
       ),
     );
   }

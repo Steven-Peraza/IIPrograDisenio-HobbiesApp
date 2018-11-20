@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' show post;
 import '../mixins/validation_mixin.dart';
@@ -5,8 +6,11 @@ import 'dart:convert';
 import '../CONSTANTS.dart';
 import 'profile.dart';
 import 'signup.dart';
-
+import '../models/profile_model.dart';
+import '../../shared/NavigateToScreen.dart';
 class Login extends StatefulWidget {
+  List<CameraDescription> cameras;
+  Login(this.cameras);
   createState() {
     return LoginState();
   }
@@ -60,9 +64,7 @@ class LoginState extends State<Login> with ValidationMixin {
                         ),
                       ],
                     ),
-                    body: Profile(idActual: extractdata['_id'], nombre: extractdata['name'], apellidos: extractdata['lastName'],
-                                  email: extractdata['email'], pass: extractdata['pass'], bio: extractdata['bio'], nick: extractdata['nick'],
-                                  ubicacion: extractdata['ubicacion'], hobbitses: extractdata['hobbies'], comus: extractdata['comunidades']),
+                    body: Profile(currentUser: new ProfileModel.fromJson(extractdata), cameras: widget.cameras),
                   ),
                 )
               ),
@@ -207,31 +209,8 @@ class LoginState extends State<Login> with ValidationMixin {
       onPressed: () {
         Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => MaterialApp(
-                  title: 'The Shire',
-                  theme: ThemeData(
-                    primaryColor: Colors.green,
-                    primarySwatch: Colors.green,
-                    scaffoldBackgroundColor: Colors.amber[100],
-                    cursorColor: Colors.green,
-                    accentColor: Colors.green,
-                  ),
-                  home: Scaffold(
-                    resizeToAvoidBottomPadding: false,
-                    appBar: AppBar(
-                      title: Text('The Shire',style: TextStyle(fontFamily: 'Viking'),),
-                      centerTitle: true,
-                      backgroundColor: Colors.green,
-                      actions: <Widget>[
-                        IconButton(
-                          icon: Image.asset('assets/images/bag_end_alternate_1.png'),
-                          onPressed: () {},
-                        ),
-                      ],
-                    ),
-                    body: SignUp(),
-                  ),
-                )
+              MaterialPageRoute(builder: (context) => navigateToScreen(context: context, cameras: widget.cameras,
+              body: SignUp())
               ),
             );
       },

@@ -1,6 +1,8 @@
 
 
 class ProfileModel {
+  String apelllidos;
+  String id;
   String nombre;
   String nick;
   String ubicacion;
@@ -8,10 +10,13 @@ class ProfileModel {
   String bio;
   String email;
   String pass;
-  List<String> hobbies;
-  List<String> comunidades;
+  List<dynamic> hobbies;
+  List<dynamic> comunidades;
 
-  ProfileModel (this.bio,
+  ProfileModel (
+  this.apelllidos,
+  this.id, 
+  this.bio,
   this.comunidades,
   this.email,
   this.foto,
@@ -19,10 +24,15 @@ class ProfileModel {
   this.nick,
   this.nombre,
   this.pass,
-  this.ubicacion);
+  this.ubicacion){
+    this.comunidades = [];
+    this.hobbies = [];
+  }
 
   ProfileModel.fromJson(Map<String, dynamic> parsedJson){
-    nombre = parsedJson['nombre'];
+    id = parsedJson['_id'];
+    apelllidos = parsedJson['lastName'];
+    nombre = parsedJson['name'];
     nick = parsedJson['nick'];
     ubicacion = parsedJson['ubicacion'];
     foto = parsedJson['foto'];

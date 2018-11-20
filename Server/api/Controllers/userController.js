@@ -5,7 +5,7 @@ exports.getAllUsers = (req, res) => {
     Users.findOne({ email: req.body['email'], pass: req.body['pass'] })
         .then((doc) => {
             if (doc) {
-                console.log(doc._id);
+                console.log(doc);
                 res.status(201).send(doc);
             } else {
                 console.log("no data exist for this id");

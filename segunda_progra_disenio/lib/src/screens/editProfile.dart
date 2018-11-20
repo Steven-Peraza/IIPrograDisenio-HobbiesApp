@@ -4,20 +4,12 @@ import '../CONSTANTS.dart';
 import 'profile.dart';
 import 'package:http/http.dart' show post, get;
 import 'dart:convert';
+import '../models/profile_model.dart';
 
 class EditProfile extends StatefulWidget {
-  final String idActual;
-  final String nombre;
-  final String apellidos;
-  final String nick;
-  final String ubicacion;
-  final String email;
-  final String pass;
-  final String bio;
-  final List<dynamic> hobbitses;
-  final List<dynamic> comus;
-  EditProfile({Key key, this.idActual,  this.nombre, this.apellidos, this.comus, this.email, this.pass, this.bio, this.hobbitses,
-              this.nick, this.ubicacion}) : super(key: key);
+  final ProfileModel currentUser;
+
+  EditProfile({Key key, this.currentUser}) : super(key: key);
   @override
   EditProfileState createState() => new EditProfileState();
 }
@@ -59,7 +51,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
   };
 
   void addValues() {
-    for (var hobb in widget.hobbitses) {
+    for (var hobb in widget.currentUser.hobbies) {
       values['$hobb'] = true;
     }
   }
@@ -85,7 +77,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
   void sendEditUser() async{
     Uri uri = new Uri.https(CONSTANTS.BASE_URL, "/profiles/editProfile");
     Map<String,dynamic> jsonUser = {
-      'idActual':widget.idActual,
+      'idActual':widget.currentUser.id,
       'name':nombre,
       'lastName':apellidos,
       'nick':nick,
@@ -138,7 +130,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
       'name':newComu,
       'hobby':hobSelect,
       'descripcion': descrip,
-      'users':[widget.idActual],
+      'users':[widget.currentUser.id],
       'foto':""
     };
     Map<String,String> headers = {
@@ -160,7 +152,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
   void getComus() async {
     Uri uri = new Uri.http(CONSTANTS.BASE_URL, "/comus/getComus");
     Map<String,dynamic> jsonUser = {
-      'hobbies':widget.hobbitses
+      'hobbies':widget.currentUser.hobbies
     };
     Map<String,String> headers = {
     'Content-type' : 'application/json',
@@ -184,7 +176,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
     Uri uri = new Uri.http(CONSTANTS.BASE_URL, "/comus/joinComu");
     Map<String,dynamic> jsonUser = {
       'name':joinNewComu,
-      'idActual': widget.idActual
+      'idActual': widget.currentUser.id
     };
     Map<String,String> headers = {
     'Content-type' : 'application/json',
@@ -194,7 +186,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
       .then((response){
         if (this.mounted){
           setState(() {
-            comusFinal = widget.comus;
+            comusFinal = widget.currentUser.comunidades;
             comusFinal.add(joinNewComu);
           });
         }
@@ -206,7 +198,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
     Uri uri = new Uri.http(CONSTANTS.BASE_URL, "/profiles/addHobby");
     Map<String,dynamic> jsonUser = {
       'newHobby':joinNewHobby,
-      'idActual': widget.idActual
+      'idActual': widget.currentUser.id
     };
     Map<String,String> headers = {
     'Content-type' : 'application/json',
@@ -314,7 +306,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
   void getData() async {
     Uri uri = new Uri.https(CONSTANTS.BASE_URL, "/profiles/getProfile");
     Map<String,dynamic> jsonUser = {
-      'id':widget.idActual
+      'id':widget.currentUser.id
     };
     Map<String,String> headers = {
     'Content-type' : 'application/json',
@@ -348,9 +340,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
                         ),
                       ],
                     ),
-                    body: Profile(idActual: extractdata['_id'], nombre: extractdata['name'], apellidos: extractdata['lastName'],
-                                  email: extractdata['email'], pass: extractdata['pass'], bio: extractdata['bio'], nick: extractdata['nick'],
-                                  ubicacion: extractdata['ubicacion'], hobbitses: extractdata['hobbies'], comus: extractdata['comunidades']),
+                    body: Profile(currentUser: new ProfileModel.fromJson(extractdata)),
                   ),
                 )
               ),
@@ -505,7 +495,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
     print("comusV2"+comusv2.toString());
     //print(widget.comus);
     for (var entry in comusv2) {
-      if ((entry.startsWith(text)) && (!(widget.comus.contains(entry)))) {
+      if ((entry.startsWith(text)) && (!(widget.currentUser.comunidades.contains(entry)))) {
         comusv3.add(entry);
       }
     }
@@ -544,7 +534,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
 
   Widget nameField() {
     return TextFormField(
-      initialValue: widget.nombre,
+      initialValue: widget.currentUser.nombre,
       style: TextStyle(fontFamily:'Morris', fontSize: 20.0, color: Colors.black),
       decoration: InputDecoration(
         labelText: 'Name:',
@@ -559,7 +549,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
 
   Widget appField() {
     return TextFormField(
-      initialValue: widget.apellidos,
+      initialValue: widget.currentUser.apelllidos,
       style: TextStyle(fontFamily:'Morris',fontSize: 20.0, color: Colors.black),
       decoration: InputDecoration(
         labelText: 'Last Names:',
@@ -574,7 +564,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
 
   Widget nickField() {
     return TextFormField(
-      initialValue: widget.nick,
+      initialValue: widget.currentUser.nick,
       style: TextStyle(fontFamily:'Morris',fontSize: 20.0, color: Colors.black),
       decoration: InputDecoration(
         labelText: 'Nickname:',
@@ -589,7 +579,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
 
   Widget ubiField() {
     return TextFormField(
-      initialValue: widget.ubicacion,
+      initialValue: widget.currentUser.ubicacion,
       style: TextStyle(fontFamily:'Morris',fontSize: 20.0, color: Colors.black),
       decoration: InputDecoration(
         labelText: 'Ubicacion:',
@@ -604,7 +594,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
 
   Widget emailField() {
     return TextFormField(
-      initialValue: widget.email,
+      initialValue: widget.currentUser.email,
       style: TextStyle(fontFamily:'Morris',fontSize: 20.0, color: Colors.black),
       keyboardType:TextInputType.emailAddress,
       decoration: InputDecoration(
@@ -620,7 +610,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
 
   Widget passField() {
     return TextFormField(
-      initialValue: widget.pass,
+      initialValue: widget.currentUser.pass,
       style: TextStyle(fontFamily:'Morris',fontSize: 20.0, color: Colors.black),
       obscureText: true,
       decoration: InputDecoration(
@@ -636,7 +626,7 @@ class EditProfileState extends State<EditProfile> with ValidationMixin {
 
   Widget bioField() {
     return TextFormField(
-      initialValue: widget.bio,
+      initialValue: widget.currentUser.bio,
       style: TextStyle(fontFamily:'Morris',fontSize: 20.0, color: Colors.black),
       decoration: InputDecoration(
         labelText: 'Bio:',
