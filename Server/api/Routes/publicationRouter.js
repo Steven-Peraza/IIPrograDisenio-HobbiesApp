@@ -5,7 +5,7 @@ const publicationsRouter = express.Router();
 //S3.uploadFile("/Users/jafethvasquez/IIPrograDisenio-HobbiesApp/Server/api/Services/File2upload.JPG")
 publicationsRouter
     .post('/create/', controller.addNewPublication)
-    .get('/getByHobby/:hobby/', controller.getPublicationsByHobby)
+    .post('/getByHobbies', controller.getPublicationsByHobby)
     .post('/uploadImage', S3.upload.single('photo'),function(req, res, next) {
         console.log(req.file);
         res.send({file:req.file}).status(200);

@@ -27,9 +27,9 @@ class PublicationItemState extends State<PublicationItem> {
         leading: Icon(Icons.dashboard),
         title: Text(widget.publication.hobby),
         subtitle: Text(widget.publication.text),
-        trailing: Text("Jafeth Vásquez"),
+        trailing: Text(widget.publication.username),
       ),
-      Image.network("https://s3-us-west-2.amazonaws.com/hobbysite-sourcesbucket/folder/1540270494525_File2upload.JPG"),
+      Image.network(widget.publication.mediaLink),
       ButtonTheme.bar( // make buttons use the appropriate styles for cards
         child: ButtonBar(
           children: <Widget>[

@@ -19,20 +19,26 @@ class Wall extends StatefulWidget {
   @override
     State<StatefulWidget> createState() {
       // TODO: implement createState
-      
       return WallState();
     }
+  
 }
 
 class WallState extends State<Wall>{
+
+  void initState() { 
+    super.initState();
+    getPublications();
+  }
 List<PublicationModel> publicationsList = [];
 
-WallState(){
-  getPublications();
-}
-
 getPublications() async{
-  final response = await get('https://'+CONSTANTS.BASE_URL+'/publications/getByHobby/Futbol');
+  Map<String,String> headers = {
+    'Content-type' : 'application/json',
+    'Accept': 'application/json',
+    };
+  final response = await post('https://'+CONSTANTS.BASE_URL+'/publications/getByHobbies',
+  body:json.encode({"hobbies": widget.currentUser.hobbies}),headers: headers);
   final parsedJson = json.decode(response.body) as List;
   setState(() {
       publicationsList = parsedJson.map((e)=> new PublicationModel.fromJason(e)).toList();

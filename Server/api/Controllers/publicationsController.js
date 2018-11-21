@@ -24,7 +24,7 @@ exports.addNewPublication = (req, res) => {
 
 exports.getPublicationsByHobby = (req,res)=>{
 
-Publication.find({hobby:req.params.hobby})
+Publication.find({ hobby: { $in: req.body['hobbies'] }})
 .then(
     (doc)=>{
         if (doc) {
